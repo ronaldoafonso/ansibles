@@ -1,0 +1,54 @@
+---
+- name: Common initial setup
+  hosts: initials
+  remote_user: root
+
+  vars_prompt:
+    - name: "root_password"
+      prompt: "root password?"
+    - name: "admin_password"
+      prompt: "admin password?"
+
+  tasks:
+    - name: Set 'root' password
+      user:
+        name: root
+        password: "{{ root_password|password_hash('sha512') }}"
+
+    - name: Install "sudo" package
+      apt:
+        name: sudo
+        update_cache: yes
+
+    - name: Add 'admin' group
+      group:
+        name: "{{ admin_group }}"
+        state: present
+
+    - name: Add 'admin' user
+      user:
+        name: "{{ admin_username }}"
+        password: "{{ admin_password|password_hash('sha512') }}"
+        group: "{{ admin_group }}"
+        groups: sudo
+        shell: /bin/bash
+        append: yes
+
+    - name: Update sshd configuration file
+      template:
+        src: templates/sshd_config.j2
+        dest: /etc/ssh/sshd_config
+        backup: yes
+        owner: 0
+        group: 0
+        mode: 0644
+        validate: '/usr/sbin/sshd -T -f %s'
+      notify:
+        - Restart sshd
+
+  handlers:
+    - name: Restart sshd
+      service:
+        name: sshd
+        state: restarted
+...
