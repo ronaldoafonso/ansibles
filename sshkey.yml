@@ -1,0 +1,22 @@
+---
+- name: Install SSH Key
+  hosts: initials
+
+  vars_prompt:
+    - name: "key_file"
+      prompt: "Admin key file"
+      private: no
+
+    - name: "key_passphrase"
+      prompt: "Adming key passphrase"
+
+  tasks:
+    - name: Generate SSH Key pair
+      local_action: command ssh-keygen -t rsa -b 4096 -C ""{{ ansible_user_id }}"" -f "{{ key_file }}" -N "{{ key_passphrase }}"
+
+    - name: Set authorized key file
+      authorized_key:
+        user: "{{ ansible_user_id }}"
+        state: present
+        key: "{{ lookup('file', key_file + '.pub') }}"
+...
