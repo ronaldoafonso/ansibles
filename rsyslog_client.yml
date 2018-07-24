@@ -1,12 +1,14 @@
 ---
-- name: Remote rsyslog server
+- name: Client sending logs to a remote rsyslog server
   hosts: servers
   become: yes
+  vars:
+    syslog_server: "remote.syslog.server"
 
   tasks:
-    - name: Copy rsyslog server config file
+    - name: Copy rsyslog client config file
       template:
-        src: templates/rsyslog-server.conf.j2
+        src: templates/rsyslog-client.conf.j2
         dest: /etc/rsyslog.conf
         backup: yes
         owner: 0
