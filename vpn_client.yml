@@ -1,0 +1,34 @@
+---
+- name: Configure VPN client
+  hosts: servers
+  become: yes
+  vars:
+    vpn_server: "remote.vpn.server"
+
+  tasks:
+    - name: Set VPN client name
+      lineinfile:
+        dest: /etc/default/openvpn
+        regexp: '^#AUTOSTART="none"'
+        line: 'AUTOSTART="{{ ansible_hostname }}"'
+        state: present
+      notify:
+        - Restart openvpn
+
+    - name: Copy VPN client config file
+      template:
+        src: templates/openvpn-client.conf.j2
+        dest: /etc/openvpn/client/{{ ansible_hostname }}.conf
+        backup: yes
+        owner: 0
+        group: 0
+        mode: 0600
+      notify:
+        - Restart openvpn
+
+  handlers:
+    - name: Restart openvpn
+      service:
+        name: openvpn@{{ ansible_hostname }}
+        state: restarted
+...

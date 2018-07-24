@@ -1,0 +1,14 @@
+cd /etc/openvpn/client
+
+client
+proto udp
+remote {{ vpn_server }}
+port 1194
+dev tun
+nobind
+
+ca ca.crt
+cert {{ ansible_hostname }}.crt
+key {{ ansible_hostname }}.key
+
+cipher AES-256-CBC
