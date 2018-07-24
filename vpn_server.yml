@@ -1,9 +1,11 @@
 ---
-- name: Configure VPN client
+- name: Configure VPN server
   hosts: servers
   become: yes
   vars:
-    vpn_server: "remote.vpn.server"
+    vpn_server_name: "vpnserver"
+    vpn_ip4_net: "10.200.0.0 255.255.0.0"
+    vpn_ip6_net: "2001::0/112"
 
   tasks:
     - name: Install "openvpn" package
@@ -11,19 +13,19 @@
         name: openvpn
         update_cache: yes
 
-    - name: Set VPN client name
+    - name: Set VPN server name
       lineinfile:
         dest: /etc/default/openvpn
         regexp: '^#AUTOSTART="none"'
-        line: 'AUTOSTART="{{ ansible_hostname }}"'
+        line: 'AUTOSTART="{{ vpn_server_name }}"'
         state: present
       notify:
         - Restart openvpn
 
-    - name: Copy VPN client config file
+    - name: Copy VPN server config file
       template:
-        src: templates/openvpn-client.conf.j2
-        dest: /etc/openvpn/client/{{ ansible_hostname }}.conf
+        src: templates/openvpn-server.conf.j2
+        dest: /etc/openvpn/{{ vpn_server_name }}.conf
         backup: yes
         owner: 0
         group: 0
@@ -34,6 +36,6 @@
   handlers:
     - name: Restart openvpn
       service:
-        name: openvpn@{{ ansible_hostname }}
+        name: openvpn@{{ vpn_server_name }}
         state: restarted
 ...

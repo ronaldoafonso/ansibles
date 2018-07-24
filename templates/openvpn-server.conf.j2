@@ -1,0 +1,18 @@
+cd /etc/openvpn
+
+proto udp
+port 1194
+keepalive 10 60
+dev tun
+server {{ vpn_ip4_net }}
+server-ipv6 {{ vpn_ip6_net }}
+topology p2p
+
+client-config-dir clients
+
+ca ca.crt
+cert {{ vpn_server_name }}.crt
+key {{ vpn_server_name }}.key
+dh dh2048.pem
+
+cipher AES-256-CBC
