@@ -1,0 +1,23 @@
+---
+- name: Remote rsyslog server
+  hosts: servers
+  become: yes
+
+  tasks:
+    - name: Copy default rsyslog config file
+      template:
+        src: templates/rsyslog.conf.j2
+        dest: /etc/rsyslog.conf
+        backup: yes
+        owner: 0
+        group: 0
+        mode: 0644
+      notify:
+        - Restart rsyslogd
+
+  handlers:
+    - name: Restart rsyslogd
+      service:
+        name: rsyslog
+        state: restarted
+...
