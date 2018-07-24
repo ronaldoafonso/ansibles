@@ -1,2 +1,2 @@
 # ansibles
-DevOpts using Ansible
+DevOps using Ansible

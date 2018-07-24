@@ -5,9 +5,9 @@
 
   vars_prompt:
     - name: "root_password"
-      prompt: "root password"
+      prompt: "Host root password to be set up"
     - name: "admin_password"
-      prompt: "admin password"
+      prompt: "Host admin password to be set up"
 
   tasks:
     - name: Set timezone

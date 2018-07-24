@@ -3,10 +3,6 @@
   hosts: initials
 
   vars_prompt:
-    - name: "key_file"
-      prompt: "Admin key file"
-      private: no
-
     - name: "key_passphrase"
       prompt: "Adming key passphrase"
 
