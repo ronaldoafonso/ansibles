@@ -23,7 +23,7 @@
     - name: Copy VPN client config file
       template:
         src: templates/openvpn-client.conf.j2
-        dest: /etc/openvpn/client/{{ ansible_hostname }}.conf
+        dest: /etc/openvpn/{{ ansible_hostname }}.conf
         backup: yes
         owner: 0
         group: 0
