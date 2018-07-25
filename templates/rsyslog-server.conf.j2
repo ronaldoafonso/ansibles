@@ -14,15 +14,15 @@ $Umask 0022
 $WorkDirectory /var/spool/rsyslog
 $IncludeConfig /etc/rsyslog.d/*.conf
 
-$template   Rkern,"/var/log/%HOSTNAME%/kern.log"
-$template   Ruser,"/var/log/%HOSTNAME%/user.log"
-$template   Rmail,"/var/log/%HOSTNAME%/mail.log"
-$template   Rdaemon,"/var/log/%HOSTNAME%/daemon.log"
-$template   Rauth,"/var/log/%HOSTNAME%/auth.log"
-$template   Rsyslog,"/var/log/%HOSTNAME%/syslog.log"
-$template   Rlpr,"/var/log/%HOSTNAME%/lpr.log"
-$template   Rnews,"/var/log/%HOSTNAME%/news.log"
-$template   Rcron,"/var/log/%HOSTNAME%/cron.log"
+$template   Rkern,"/var/log/remote/%HOSTNAME%/kern.log"
+$template   Ruser,"/var/log/remote/%HOSTNAME%/user.log"
+$template   Rmail,"/var/log/remote/%HOSTNAME%/mail.log"
+$template   Rdaemon,"/var/log/remote/%HOSTNAME%/daemon.log"
+$template   Rauth,"/var/log/remote/%HOSTNAME%/auth.log"
+$template   Rsyslog,"/var/log/remote/%HOSTNAME%/syslog.log"
+$template   Rlpr,"/var/log/remote/%HOSTNAME%/lpr.log"
+$template   Rnews,"/var/log/remote/%HOSTNAME%/news.log"
+$template   Rcron,"/var/log/remote/%HOSTNAME%/cron.log"
 
 kern.*                  ?Rkern
 user.*                  ?Ruser
