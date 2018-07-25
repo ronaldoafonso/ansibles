@@ -1,0 +1,33 @@
+---
+- name: Configure email server
+  hosts: servers
+  become: yes
+  vars:
+    myhostname: "myhostname"
+    mydomain: "mydomain"
+
+  tasks:
+    - name: Install mail packages
+      apt:
+        name: "{{ item }}"
+        update_cache: yes
+      with_items:
+        - postfix
+        - mailutils
+
+    - name: Copy postfix server config file
+      template:
+        src: templates/main.cf.j2
+        dest: /etc/postfix/main.cf
+        owner: 0
+        group: 0
+        mode: 0644
+      notify:
+        - Restart postfix
+
+  handlers:
+    - name: Restart postfix
+      service:
+        name: postfix
+        state: restarted
+...
