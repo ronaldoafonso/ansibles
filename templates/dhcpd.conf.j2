@@ -1,0 +1,22 @@
+
+option domain-name {{ dhcp_domain_name }};
+option domain-name-servers {{ dhcp_ipv4_domain_name_server }};
+
+default-lease-time 600;
+max-lease-time 7200;
+
+ddns-update-style none;
+authoritative;
+
+subnet {{ dhcp_ipv4_net }} netmask {{ dhcp_ipv4_mask }} {
+    range {{ dhcp_ipv4_range_ini }} {{ dhcp_ipv4_range_end }};
+    option domain-name-servers {{ dhcp_ipv4_domain_name_server }};
+    option domain-name {{ dhcp_domain_name }};
+    option routers {{ dhcp_ipv4_router }};
+    option broadcast-address {{ dhcp_ipv4_broadcast }};
+}
+
+host {{ dhcp_static_hostname }} {
+  hardware ethernet {{ dhcp_hw_address }};
+  fixed-address {{ dhcp_static_hostname }}.{{ dhcp_domain_name }};
+}
