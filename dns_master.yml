@@ -1,0 +1,42 @@
+---
+- name: Configure dns master server
+  hosts: servers
+  become: yes
+  vars:
+    domain: "domain"
+
+  tasks:
+    - name: Install dns packages
+      apt:
+        name: "{{ item }}"
+        update_cache: yes
+      with_items:
+        - bind9
+        - dnsutils
+
+    - name: Copy dns master config file
+      template:
+        src: templates/named.conf.local.j2
+        dest: /etc/bind/named.conf.local
+        owner: root
+        group: bind
+        mode: 0644
+      notify:
+        - Restart dns master server
+
+    - name: Copy dns master zone file
+      template:
+        src: templates/db.domain.j2
+        dest: /var/cache/bind/db.{{ domain }}
+        owner: root
+        group: bind
+        mode: 0644
+      notify:
+        - Restart dns master server
+
+  handlers:
+    - name: Restart dns master server
+      service:
+        name: bind9
+        state: restarted
+...
