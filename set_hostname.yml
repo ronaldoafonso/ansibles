@@ -1,6 +1,6 @@
 ---
 - name: Set base hostname configuration
-  hosts: servers
+  hosts: initials
   become: yes
   vars:
     hostname: "localhost"
