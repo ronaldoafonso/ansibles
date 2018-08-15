@@ -4,6 +4,7 @@
   become: yes
   vars:
     domain: "domain"
+    slave_ip4addr: "2.2.2.2"
 
   tasks:
     - name: Install dns packages

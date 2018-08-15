@@ -5,7 +5,7 @@
 zone "{{ domain }}" IN {
     type slave;
     file "db.{{ domain }}";
-    masters { {{ master }}; };
+    masters { {{ master_ip4addr }}; };
     allow-transfer { none; };
 };
 

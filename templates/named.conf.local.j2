@@ -2,9 +2,12 @@
 // Do any local configuration here
 //
 
+acl "slave" { {{ slave_ip4addr }}; };
+
 zone "{{ domain }}" IN {
 	type master;
 	file "db.{{ domain }}";
+    allow-transfer { "slave"; };
 };
 
 // Consider adding the 1918 zones here, if they are not used in your
