@@ -3,7 +3,7 @@
   hosts: servers
   become: yes
   vars:
-    admin_username: "admin_username"
+    admin_username: false
 
   tasks:
     - name: Install prereq packages
@@ -32,10 +32,11 @@
         name: docker-ce
         update_cache: yes
 
-    - name: Add 'admin' user to docker group
+    - name: Add 'admin' user to docker group when not at production
       user:
         name: "{{ admin_username }}"
         groups: docker
         append: yes
+      when: admin_username
 
 ...
