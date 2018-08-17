@@ -23,6 +23,7 @@ $template   Rsyslog,"/var/log/remote/%HOSTNAME%/syslog.log"
 $template   Rlpr,"/var/log/remote/%HOSTNAME%/lpr.log"
 $template   Rnews,"/var/log/remote/%HOSTNAME%/news.log"
 $template   Rcron,"/var/log/remote/%HOSTNAME%/cron.log"
+$template   Rlocal,"/var/log/remote/%HOSTNAME%/local.log"
 
 kern.*                  ?Rkern
 user.*                  ?Ruser
@@ -33,3 +34,7 @@ syslog.*                ?Rsyslog
 lpr.*                   ?Rlpr
 news.*                  ?Rnews
 cron.*                  ?Rcron
+local0,local1,\
+local2,local3,\
+local4,local5,\
+local6,local7.*         ?Rlocal
