@@ -1,0 +1,74 @@
+---
+- name: Configure a reverse web proxy
+  hosts: servers
+  become: yes
+  vars:
+    reverse_proxy_user: "reverse_proxy_user"
+    reverse_proxy_server_name: "reverse_proxy_server_name"
+    reverse_proxy_server: "http://localhost:8080/"
+
+  tasks:
+    - name: Install reverse web proxy
+      apt:
+        name: "{{ item }}"
+        update_cache: yes
+      with_items:
+        - nginx-common
+        - nginx
+
+    - name: Copy "nginx" config file
+      template:
+        src: templates/nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+        owner: 0
+        group: 0
+        mode: 0644
+      notify:
+        - Restart reverse web proxy
+
+    - name: Copy "nginx default" web file
+      template:
+        src: templates/nginx-default-site.j2
+        dest: /etc/nginx/sites-available/default
+        owner: 0
+        group: 0
+        mode: 0644
+      notify:
+        - Restart reverse web proxy
+
+    - name: Copy "nginx default index" web file
+      template:
+        src: templates/nginx-default-index-site.j2
+        dest: /var/www/html/index.html
+        owner: 0
+        group: 0
+        mode: 0644
+      notify:
+        - Restart reverse web proxy
+
+    - name: Copy "nginx reverse proxy" web file
+      template:
+        src: templates/nginx-reverse-proxy-site.j2
+        dest: /etc/nginx/sites-available/reverse-proxy
+        owner: 0
+        group: 0
+        mode: 0644
+      notify:
+        - Restart reverse web proxy
+
+    - name: Create "nginx reverse proxy" symlink
+      file:
+        src: /etc/nginx/sites-available/reverse-proxy
+        dest: /etc/nginx/sites-enabled/reverse-proxy
+        owner: 0
+        group: 0
+        state: link
+      notify:
+        - Restart reverse web proxy
+
+  handlers:
+    - name: Restart reverse web proxy
+      service:
+        name: nginx
+        state: restarted
+...

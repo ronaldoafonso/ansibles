@@ -1,0 +1,14 @@
+#
+# Reverse proxy configuration
+#
+
+server {
+	listen 80;
+	listen [::]:80;
+
+	server_name {{ reverse_proxy_server_name }};
+
+	location / {
+		proxy_pass {{ reverse_proxy_server }};
+	}
+}
