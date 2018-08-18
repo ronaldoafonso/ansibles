@@ -15,10 +15,20 @@
         - bind9
         - dnsutils
 
-    - name: Copy dns master config file
+    - name: Copy dns master config local file
       template:
         src: templates/named.conf.local.j2
         dest: /etc/bind/named.conf.local
+        owner: root
+        group: bind
+        mode: 0644
+      notify:
+        - Restart dns master server
+
+    - name: Copy dns config options file
+      template:
+        src: templates/named.conf.options.j2
+        dest: /etc/bind/named.conf.options
         owner: root
         group: bind
         mode: 0644

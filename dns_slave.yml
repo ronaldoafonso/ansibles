@@ -25,6 +25,16 @@
       notify:
         - Restart dns slave server
 
+    - name: Copy dns config options file
+      template:
+        src: templates/named.conf.options.j2
+        dest: /etc/bind/named.conf.options
+        owner: root
+        group: bind
+        mode: 0644
+      notify:
+        - Restart dns slave server
+
   handlers:
     - name: Restart dns slave server
       service:
