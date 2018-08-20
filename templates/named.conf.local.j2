@@ -8,6 +8,7 @@ zone "{{ domain }}" IN {
 	type master;
 	file "db.{{ domain }}";
     allow-transfer { "slave"; };
+    allow-update { none; };
 };
 
 // Consider adding the 1918 zones here, if they are not used in your
