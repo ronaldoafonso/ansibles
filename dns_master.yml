@@ -4,44 +4,25 @@
   become: yes
   vars:
     domain: "domain"
+    bind_user: "bind"
+    bind_group: "bind"
+    bind_chroot_dir: "/var/bind/chroot"
     slave_ip4addr: "2.2.2.2"
 
   tasks:
-    - name: Install dns packages
-      apt:
-        name: "{{ item }}"
-        update_cache: yes
+    - include: dns_common.yml
+
+    - name: Copy dns master config and zone files
+      template:
+        src: "templates/{{ item.src_file }}"
+        dest: "{{ item.dst_file }}"
+        owner: root
+        group: bind
+        mode: 0644
       with_items:
-        - bind9
-        - dnsutils
-
-    - name: Copy dns master config local file
-      template:
-        src: templates/named.conf.local.j2
-        dest: /etc/bind/named.conf.local
-        owner: root
-        group: bind
-        mode: 0644
-      notify:
-        - Restart dns master server
-
-    - name: Copy dns config options file
-      template:
-        src: templates/named.conf.options.j2
-        dest: /etc/bind/named.conf.options
-        owner: root
-        group: bind
-        mode: 0644
-      notify:
-        - Restart dns master server
-
-    - name: Copy dns master zone file
-      template:
-        src: templates/db.domain.j2
-        dest: /var/cache/bind/db.{{ domain }}
-        owner: root
-        group: bind
-        mode: 0644
+        - { src_file: "named.conf.local.j2", dst_file: "/etc/bind/named.conf.local" }
+        - { src_file: "named.conf.options.j2", dst_file: "/etc/bind/named.conf.options" }
+        - { src_file: "db.domain.j2", dst_file: "/var/cache/bind/db.{{ domain }}" }
       notify:
         - Restart dns master server
 
