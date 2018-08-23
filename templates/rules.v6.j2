@@ -4,6 +4,6 @@
 :OUTPUT ACCEPT [0:0]
 -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 -A INPUT -p tcp -m tcp --dport 22 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
--A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type 128 -j ACCEPT
+-A INPUT -p icmpv6 -j ACCEPT
 -A INPUT -i lo -j ACCEPT
 COMMIT
