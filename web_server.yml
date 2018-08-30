@@ -6,6 +6,8 @@
     server_name: "server_name"
     server_admin: "server_admin"
     document_root: "document_root"
+    server_cert_file: "server_cert_file"
+    server_key_file: "server_key_file"
 
   tasks:
     - name: Install a web server
@@ -41,6 +43,13 @@
       command: a2ensite 010-cdn
       args:
         creates: /etc/apache2/sites-enabled/010-cdn.conf
+      notify:
+        - Restart web server
+
+    - name: Deactivate default site
+      command: a2dissite 000-default
+      args:
+        removes: /etc/apache2/sites-enabled/000-default.conf
       notify:
         - Restart web server
 
