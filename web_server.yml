@@ -27,6 +27,7 @@
         path: /var/www/cdn
         owner: 0
         group: 0
+        mode: 0755
         state: directory
 
     - name: Copy base CDN config file
