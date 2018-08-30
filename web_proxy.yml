@@ -1,0 +1,32 @@
+---
+- name: Configure a web proxy
+  hosts: servers
+  become: yes
+  vars:
+    localnet_name: "localnet"
+    localnet_ipaddr: "::1"
+
+  tasks:
+    - name: Install a web proxy
+      apt:
+        name: "{{ item }}"
+        update_cache: yes
+      with_items:
+        - squid
+
+    - name: Copy base config file
+      template:
+        src: templates/squid.conf.j2
+        dest: /etc/squid/squid.conf
+        owner: 0
+        group: 0
+        mode: 0640
+      notify:
+        - Restart web proxy
+
+  handlers:
+    - name: Restart web proxy
+      service:
+        name: squid
+        state: restarted
+...
