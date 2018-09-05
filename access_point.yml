@@ -1,0 +1,42 @@
+---
+- name: Configure a simple wifi access point
+  hosts: servers
+  become: yes
+  vars:
+    access_point_interface: "wlan0"
+    access_point_ssid: "ssid"
+
+  tasks:
+    - name: Install wifi access point software
+      apt:
+        name: "{{ item }}"
+        update_cache: yes
+      with_items:
+        - hostapd
+        - iw
+
+    - name: Initialize access point at boot time
+      lineinfile:
+        dest: /etc/default/hostapd
+        regexp: '^#DAEMON_CONF=""'
+        line: 'DAEMON_CONF="/etc/hostapd/hostapd.conf"'
+        state: present
+      notify:
+        - Restart access point
+
+    - name: Copy "access point" config file
+      template:
+        src: templates/hostapd.conf.j2
+        dest: /etc/hostapd/hostapd.conf
+        owner: 0
+        group: 0
+        mode: 0644
+      notify:
+        - Restart access point
+
+  handlers:
+    - name: Restart access point
+      service:
+        name: hostapd
+        state: restarted
+...
