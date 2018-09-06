@@ -1,11 +1,16 @@
 ---
 - name: Configure a reverse web proxy
-  hosts: servers
+  hosts: web
   become: yes
   vars:
     reverse_proxy_user: "reverse_proxy_user"
+    reverse_proxy_log_server: "reverse_proxy_log_server"
     reverse_proxy_server_name: "reverse_proxy_server_name"
     reverse_proxy_server: "http://localhost:8080/"
+    reverse_proxy_ssl_certificate: "/etc/ssl/cert.crt"
+    reverse_proxy_ssl_certificate_key: "/etc/ssl/cert.key"
+    reverse_proxy_ssl_protocols: "protocols"
+    reverse_proxy_ssl_ciphers: "ciphers"
 
   tasks:
     - name: Install reverse web proxy
@@ -16,53 +21,31 @@
         - nginx-common
         - nginx
 
-    - name: Copy "nginx" config file
+    - name: Copy "reverse web proxy" config files
       template:
-        src: templates/nginx.conf.j2
-        dest: /etc/nginx/nginx.conf
-        owner: 0
-        group: 0
-        mode: 0644
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: "{{ item.owner }}"
+        group: "{{ item.group }}"
+        mode: "{{ item.mode }}"
+      with_items:
+        - {src: "templates/nginx.conf.j2", dest: "/etc/nginx/nginx.conf", owner: "0", group: "0", mode: "0644"}
+        - {src: "templates/nginx-redirect-site.j2", dest: "/etc/nginx/sites-available/redirect", owner: "0", group: "0", mode: "0644"}
+        - {src: "templates/nginx-reverse-proxy-site.j2", dest: "/etc/nginx/sites-available/reverse-proxy", owner: "0", group: "0", mode: "0644"}
       notify:
         - Restart reverse web proxy
 
-    - name: Copy "nginx default" web file
-      template:
-        src: templates/nginx-default-site.j2
-        dest: /etc/nginx/sites-available/default
-        owner: 0
-        group: 0
-        mode: 0644
-      notify:
-        - Restart reverse web proxy
-
-    - name: Copy "nginx default index" web file
-      template:
-        src: templates/nginx-default-index-site.j2
-        dest: /var/www/html/index.html
-        owner: 0
-        group: 0
-        mode: 0644
-      notify:
-        - Restart reverse web proxy
-
-    - name: Copy "nginx reverse proxy" web file
-      template:
-        src: templates/nginx-reverse-proxy-site.j2
-        dest: /etc/nginx/sites-available/reverse-proxy
-        owner: 0
-        group: 0
-        mode: 0644
-      notify:
-        - Restart reverse web proxy
-
-    - name: Create "nginx reverse proxy" symlink
+    - name: Create "reverse proxy" symlink sites
       file:
-        src: /etc/nginx/sites-available/reverse-proxy
-        dest: /etc/nginx/sites-enabled/reverse-proxy
-        owner: 0
-        group: 0
-        state: link
+        src: "/etc/nginx/{{ item.src }}"
+        dest: "/etc/nginx/{{ item.dest }}"
+        owner: "{{ item.owner }}"
+        group: "{{ item.group }}"
+        state: "{{ item.state }}"
+      with_items:
+        - {src: "sites-available/redirect", dest: "sites-enabled/redirect", owner: "0", group: "0", state: "link"}
+        - {src: "sites-available/reverse-proxy", dest: "sites-enabled/reverse-proxy", owner: "0", group: "0", state: "link"}
+        - {src: "", dest: "sites-enabled/default", owner: "0", group: "0", state: "absent"}
       notify:
         - Restart reverse web proxy
 

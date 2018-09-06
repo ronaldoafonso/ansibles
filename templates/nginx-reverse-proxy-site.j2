@@ -1,10 +1,22 @@
 #
-# Reverse proxy configuration
-#
+## Reverse proxy configuration
+##
 
 server {
-	listen 80;
-	listen [::]:80;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    ssl_certificate {{ reverse_proxy_ssl_certificate }};
+    ssl_certificate_key {{ reverse_proxy_ssl_certificate_key }};
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:50m;
+    ssl_session_tickets off;
+
+    ssl_protocols {{ reverse_proxy_ssl_protocols }};
+    ssl_ciphers {{ reverse_proxy_ssl_ciphers }};
+    ssl_prefer_server_ciphers on;
+
+    add_header Strict-Transport-Security max-age=15768000;
 
 	server_name {{ reverse_proxy_server_name }};
 
