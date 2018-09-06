@@ -23,29 +23,29 @@
 
     - name: Copy "reverse web proxy" config files
       template:
-        src: "{{ item.src }}"
-        dest: "{{ item.dest }}"
+        src: "templates/{{ item.src }}"
+        dest: "/etc/nginx/{{ item.dest }}"
         owner: "{{ item.owner }}"
         group: "{{ item.group }}"
         mode: "{{ item.mode }}"
       with_items:
-        - {src: "templates/nginx.conf.j2", dest: "/etc/nginx/nginx.conf", owner: "0", group: "0", mode: "0644"}
-        - {src: "templates/nginx-redirect-site.j2", dest: "/etc/nginx/sites-available/redirect", owner: "0", group: "0", mode: "0644"}
-        - {src: "templates/nginx-reverse-proxy-site.j2", dest: "/etc/nginx/sites-available/reverse-proxy", owner: "0", group: "0", mode: "0644"}
+        - {src: "nginx.conf.j2", dest: "nginx.conf", owner: "0", group: "0", mode: "0644"}
+        - {src: "nginx-redirect-site.j2", dest: "sites-available/redirect", owner: "0", group: "0", mode: "0644"}
+        - {src: "nginx-reverse-proxy-site.j2", dest: "sites-available/reverse-proxy", owner: "0", group: "0", mode: "0644"}
       notify:
         - Restart reverse web proxy
 
     - name: Create "reverse proxy" symlink sites
       file:
-        src: "/etc/nginx/{{ item.src }}"
-        dest: "/etc/nginx/{{ item.dest }}"
+        src: "/etc/nginx/sites-available/{{ item.src }}"
+        dest: "/etc/nginx/sites-enabled/{{ item.dest }}"
         owner: "{{ item.owner }}"
         group: "{{ item.group }}"
         state: "{{ item.state }}"
       with_items:
-        - {src: "sites-available/redirect", dest: "sites-enabled/redirect", owner: "0", group: "0", state: "link"}
-        - {src: "sites-available/reverse-proxy", dest: "sites-enabled/reverse-proxy", owner: "0", group: "0", state: "link"}
-        - {src: "", dest: "sites-enabled/default", owner: "0", group: "0", state: "absent"}
+        - {src: "redirect", dest: "redirect", owner: "0", group: "0", state: "link"}
+        - {src: "reverse-proxy", dest: "reverse-proxy", owner: "0", group: "0", state: "link"}
+        - {src: "", dest: "default", owner: "0", group: "0", state: "absent"}
       notify:
         - Restart reverse web proxy
 
