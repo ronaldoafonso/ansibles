@@ -1,0 +1,8 @@
+---
+- name: Configure a CDN web server
+  hosts: web
+  become: yes
+
+  roles:
+    - role: cdn
+...

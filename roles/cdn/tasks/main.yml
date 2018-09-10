@@ -1,0 +1,58 @@
+- name: Install CDN packages
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  with_items:
+    - apache2
+
+- name: Activate SSL module
+  apache2_module:
+    name: ssl
+    state: present
+
+- name: Create CDN base dir
+  file:
+    path: /var/www/cdn
+    owner: 0
+    group: 0
+    mode: 0755
+    state: directory
+
+- name: Copy base CDN config files
+  template:
+    src: "{{ item }}.j2"
+    dest: /etc/apache2/sites-available/{{ item }}
+    owner: 0
+    group: 0
+    mode: 0644
+  with_items:
+    - 010-cdn-http.conf
+    - 010-cdn-https.conf
+  notify:
+    - Restart web server
+
+- name: Activate CDN sites
+  command: a2ensite {{ item }}
+  args:
+    creates: /etc/apache2/sites-enabled/{{ item }}
+  with_items:
+    - 010-cdn-http.conf
+    - 010-cdn-https.conf
+  notify:
+    - Restart web server
+
+- name: Deactivate default site
+  command: a2dissite 000-default
+  args:
+    removes: /etc/apache2/sites-enabled/000-default.conf
+  notify:
+    - Restart web server
+
+- name: Activate CDN modules
+  command: a2enmod {{ item }}
+  args:
+    creates: /etc/apache2/mods-enabled/{{ item }}.load
+  with_items:
+    - headers
+  notify:
+    - Restart web server

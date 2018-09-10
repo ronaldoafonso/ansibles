@@ -1,0 +1,5 @@
+server_name: "server_name"
+server_admin: "server_admin"
+document_root: "document_root"
+server_cert_file: "server_cert_file"
+server_key_file: "server_key_file"
