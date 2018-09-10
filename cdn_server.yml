@@ -4,5 +4,6 @@
   become: yes
 
   roles:
+    - role: letsencrypt
     - role: cdn
 ...
