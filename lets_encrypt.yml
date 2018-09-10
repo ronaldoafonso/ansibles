@@ -13,11 +13,7 @@
         update_cache: yes
       with_items:
         - python-certbot
-        - python-pexpect
 
     - name: Execute certbot command
-      expect:
-        command: certbot certonly --standalone -d {{ cert_domain_name }} -m {{ cert_email }} --staging
-        responses: 
-          ancel: "A"
+      shell: certbot certonly --standalone --noninteractive --agree-tos --email {{ cert_email }} -d {{ cert_domain_name }}
 ...
