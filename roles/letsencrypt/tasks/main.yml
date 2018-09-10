@@ -1,0 +1,9 @@
+- name: Install Let's Encrypt packages
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  with_items:
+    - python3-certbot
+
+- name: Execute certbot command
+  shell: certbot certonly --standalone --noninteractive --agree-tos --email {{ cert_email }} -d {{ cert_domain_name }}
