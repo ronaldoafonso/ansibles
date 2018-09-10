@@ -1,0 +1,23 @@
+---
+- name: Install a Let's Encrypt TLS certificate
+  hosts: web
+  become: yes
+  vars:
+    cert_domain_name: "www.site.com"
+    cert_email: "user@site.com"
+
+  tasks:
+    - name: Install Let's Encrypt packages
+      apt:
+        name: "{{ item }}"
+        update_cache: yes
+      with_items:
+        - python-certbot
+        - python-pexpect
+
+    - name: Execute certbot command
+      expect:
+        command: certbot certonly --standalone -d {{ cert_domain_name }} -m {{ cert_email }} --staging
+        responses: 
+          ancel: "A"
+...
