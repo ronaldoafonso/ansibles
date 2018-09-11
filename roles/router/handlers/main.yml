@@ -1,0 +1,9 @@
+---
+- name: Restart sysctl
+  command: sysctl --system
+
+- name: Restart firewall
+  service:
+    name: netfilter-persistent
+    state: restarted
+...

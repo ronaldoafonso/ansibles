@@ -1,0 +1,35 @@
+---
+- name: Install basic router packages
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  with_items:
+    - iptables
+    - iptables-persistent
+
+- name: Copy router sysctl config file
+  template:
+    src: 10-router.conf.j2
+    dest: /etc/sysctl.d/10-router.conf
+    owner: 0
+    group: 0
+    mode: 0644
+  notify:
+    - Restart sysctl
+
+- name: Configure NAT for IPv4
+  iptables_raw:
+    name: basic_nat
+    table: nat
+    weight: 10
+    ipversion: 4
+    keep_unmanaged: no
+    rules: |
+      -P PREROUTING ACCEPT
+      -P INPUT ACCEPT
+      -P OUTPUT ACCEPT
+      -P POSTROUTING ACCEPT
+      -A POSTROUTING -o {{ router_wan_interface }} -j MASQUERADE
+  notify:
+    - Restart firewall
+...

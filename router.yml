@@ -1,45 +1,11 @@
 ---
-- name: Configure a simple router
+- name: Configure a router
   hosts: servers
   become: yes
   vars:
     router_wan_interface: "eth0"
 
-  tasks:
-    - name: Install router packages
-      apt:
-        name: "{{ item }}"
-        update_cache: yes
-      with_items:
-        - iptables
-        - iptables-persistent
-
-    - name: Copy router forward config file
-      template:
-        src: templates/10-router.conf.j2
-        dest: /etc/sysctl.d/10-router.conf
-        owner: 0
-        group: 0
-        mode: 0644
-      notify:
-        - Restart router
-
-    - name: Copy router iptables rules file
-      template:
-        src: "templates/{{ item }}.j2"
-        dest: "/etc/iptables/{{ item }}"
-        owner: 0
-        group: 0
-        mode: 0644
-      with_items:
-        - rules-router.v4
-        - rules-router.v6
-      notify:
-        - Restart router
-
-  handlers:
-    - name: Restart router
-      service:
-        name: netfilter-persistent
-        state: restarted
+  roles:
+    - firewall
+    - router
 ...
