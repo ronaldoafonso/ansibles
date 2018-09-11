@@ -1,0 +1,48 @@
+---
+- name: Install basic firewall packages
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  with_items:
+    - iptables
+    - iptables-persistent
+
+- name: Set default IPv4 rules begin
+  iptables_raw:
+    name: default_ipv4_rules_begin
+    weight: 10
+    ipversion: 4
+    keep_unmanaged: no
+    rules: |
+      -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+      -A INPUT -p tcp -m tcp --dport 22 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+
+- name: Set default IPv4 rules end
+  iptables_raw:
+    name: default_ipv4_rules_end
+    weight: 80
+    ipversion: 4
+    keep_unmanaged: no
+    rules: |
+      -A INPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
+      -A INPUT -i lo  -j ACCEPT
+
+- name: Set default IPv6 rules begin
+  iptables_raw:
+    name: default_ipv6_rules_begin
+    weight: 10
+    ipversion: 6
+    keep_unmanaged: no
+    rules: |
+      -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+      -A INPUT -p tcp -m tcp --dport 22 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+
+- name: Set default IPv6 rules end
+  iptables_raw:
+    name: default_ipv6_rules_end
+    weight: 80
+    ipversion: 6
+    keep_unmanaged: no
+    rules: |
+      -A INPUT -p icmpv6 -j ACCEPT
+      -A INPUT -i lo  -j ACCEPT

@@ -3,31 +3,6 @@
   hosts: servers
   become: yes
 
-  tasks:
-    - name: Install firewall packages
-      apt:
-        name: "{{ item }}"
-        update_cache: yes
-      with_items:
-        - iptables
-        - iptables-persistent
-
-    - name: Copy firewall iptables rule's file
-      template:
-        src: "templates/{{ item }}.j2"
-        dest: "/etc/iptables/{{ item }}"
-        owner: 0
-        group: 0
-        mode: 0644
-      with_items:
-        - rules.v4
-        - rules.v6
-      notify:
-        - Restart firewall
-
-  handlers:
-    - name: Restart firewall
-      service:
-        name: netfilter-persistent
-        state: restarted
+  roles:
+    - firewall
 ...
