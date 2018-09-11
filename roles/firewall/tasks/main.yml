@@ -14,6 +14,9 @@
     ipversion: 4
     keep_unmanaged: no
     rules: |
+      -P INPUT DROP
+      -P FORWARD DROP
+      -P OUTPUT ACCEPT
       -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
       -A INPUT -p tcp -m tcp --dport 22 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
 
@@ -34,6 +37,9 @@
     ipversion: 6
     keep_unmanaged: no
     rules: |
+      -P INPUT DROP
+      -P FORWARD DROP
+      -P OUTPUT ACCEPT
       -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
       -A INPUT -p tcp -m tcp --dport 22 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
 
