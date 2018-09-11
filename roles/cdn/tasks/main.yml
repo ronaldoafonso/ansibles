@@ -56,3 +56,21 @@
     - headers
   notify:
     - Restart web server
+
+- name: Allow HTTP and HTTPS ports for IPv4
+  iptables_raw:
+    name: cdn_ports_ipv4
+    weight: 20
+    ipversion: 4
+    rules: |
+      -A INPUT -p tcp -m tcp --dport 80 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+      -A INPUT -p tcp -m tcp --dport 443 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+
+- name: Allow HTTP and HTTPS ports for IPv6
+  iptables_raw:
+    name: cdn_ports_ipv6
+    weight: 20
+    ipversion: 6
+    rules: |
+      -A INPUT -p tcp -m tcp --dport 80 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+      -A INPUT -p tcp -m tcp --dport 443 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
