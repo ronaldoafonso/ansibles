@@ -1,0 +1,32 @@
+---
+- name: Install rsyslog packages
+  apt:
+    name: rsyslog
+    update_cache: yes
+
+- name: Copy rsyslog server config file
+  template:
+    src: rsyslog.conf.j2
+    dest: /etc/rsyslog.conf
+    owner: 0
+    group: 0
+    mode: 0644
+  notify:
+    - Restart rsyslogd
+
+- name: Allow syslog messages coming in on IPv4 interface
+  iptables_raw:
+    name: "syslog_port_ipv4"
+    weight: 80
+    ipversion: 4
+    keep_unmanaged: no
+    rules: "-A INPUT -i tun+ -p udp -m udp --dport 514 -m state --state NEW -j ACCEPT"
+
+- name: Allow syslog messages coming in on IPv6 interface
+  iptables_raw:
+    name: "syslog_port_ipv6"
+    weight: 80
+    ipversion: 6
+    keep_unmanaged: no
+    rules: "-A INPUT -i tun+ -p udp -m udp --dport 514 -m state --state NEW -j ACCEPT"
+...
