@@ -2,47 +2,7 @@
 - name: Configure DHCP server
   hosts: servers
   become: yes
-  vars:
-    dhcp_listen_interface: "eth0"
-    dhcp_domain_name: "domain.name"
-    dhcp_ipv4_domain_name_server: "192.168.1.1"
-    dhcp_ipv4_net: "192.168.1.0"
-    dhcp_ipv4_mask: "255.255.255.0"
-    dhcp_ipv4_range_ini: "192.168.1.10"
-    dhcp_ipv4_range_end: "192.168.1.100"
-    dhcp_ipv4_broadcast: "192.168.1.255"
-    dhcp_ipv4_router: "192.168.1.1"
-    dhcp_static_hostname: "static.domain.name"
-    dhcp_hw_address: "11:22:33:44:55:66"
 
-  tasks:
-    - name: Install "dhcp server" package
-      apt:
-        name: isc-dhcp-server
-        update_cache: yes
-
-    - name: Set "dhcp server" listen interface
-      lineinfile:
-        dest: /etc/default/isc-dhcp-server
-        regexp: '^INTERFACESv4=""'
-        line: 'INTERFACESv4="{{ dhcp_listen_interface }}"'
-        state: present
-      notify:
-        - Restart dhcp server
-
-    - name: Copy "dhcp server" config file
-      template:
-        src: templates/dhcpd.conf.j2
-        dest: /etc/dhcp/dhcpd.conf
-        owner: 0
-        group: 0
-        mode: 0644
-      notify:
-        - Restart dhcp server
-
-  handlers:
-    - name: Restart dhcp server
-      service:
-        name: isc-dhcp-server
-        state: restarted
+  roles:
+    - dhcpd
 ...

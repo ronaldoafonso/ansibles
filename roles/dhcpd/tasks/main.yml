@@ -1,0 +1,36 @@
+---
+- name: Install "dhcp server" package
+  apt:
+    name: isc-dhcp-server
+    update_cache: yes
+
+- name: Set "dhcp server" listen interface(s)
+  lineinfile:
+    dest: /etc/default/isc-dhcp-server
+    regexp: '^INTERFACESv4=""'
+    line: 'INTERFACESv4="{{ dhcp_listen_ipv4_interfaces }}"'
+    state: present
+  notify:
+    - Restart dhcp server
+
+- name: Copy "dhcp server" config file
+  template:
+    src: dhcpd.conf.j2
+    dest: /etc/dhcp/dhcpd.conf
+    owner: 0
+    group: 0
+    mode: 0644
+  notify:
+    - Restart dhcp server
+
+- name: Allow DHCPd ports for IPv4
+  iptables_raw:
+    name: "dhcpd_ports_int_{{ item.interface }}_ipv4"
+    weight: "{{ item.weight }}"
+    ipversion: 4
+    keep_unmanaged: no
+    rules: "-A INPUT -i {{ item.interface }} -p udp -m udp --dport 67 -m state --state NEW -j ACCEPT"
+  with_items:
+    - { "interface": "enp3s0", "weight": 20 }
+    - { "interface": "wlp4s0", "weight": 21 }
+...
