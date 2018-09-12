@@ -8,4 +8,5 @@
   roles:
     - firewall
     - router
+    - dhcpd
 ...
