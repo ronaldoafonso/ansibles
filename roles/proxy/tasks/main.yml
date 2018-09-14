@@ -1,0 +1,34 @@
+---
+- name: Install a web proxy
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  with_items:
+    - squid
+
+- name: Copy base config file
+  template:
+    src: squid.conf.j2
+    dest: /etc/squid/squid.conf
+    owner: 0
+    group: 0
+    mode: 0640
+  notify:
+    - Restart web proxy
+
+- name: Allow proxy cache ports for IPv4
+  iptables_raw:
+    name: proxy_ports_ipv4
+    weight: 40
+    ipversion: 4
+    rules: "-A INPUT -p tcp -m tcp --dport 3128 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT"
+
+- name: Allow proxy cache ports for IPv6
+  iptables_raw:
+    name: proxy_ports_ipv6
+    weight: 40
+    ipversion: 6
+    rules: "-A INPUT -p tcp -m tcp --dport 3128 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT"
+  notify:
+    - Restart firewall
+...

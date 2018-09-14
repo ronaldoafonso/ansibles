@@ -1,0 +1,11 @@
+---
+- name: Restart web proxy
+  service:
+    name: squid
+    state: restarted
+
+- name: Restart firewall
+  service:
+    name: netfilter-persistent
+    state: restarted
+...

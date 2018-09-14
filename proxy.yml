@@ -1,0 +1,8 @@
+---
+- name: Configure a web proxy
+  hosts: servers
+  become: yes
+
+  roles:
+    - proxy
+...
