@@ -18,17 +18,25 @@
 
 - name: Allow proxy cache ports for IPv4
   iptables_raw:
-    name: proxy_ports_ipv4
+    name: "proxy_ports_{{ item }}_ipv4"
     weight: 40
     ipversion: 4
-    rules: "-A INPUT -p tcp -m tcp --dport 3128 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT"
+    rules: "-A INPUT -i {{ item }} -p tcp -m tcp --dport 3128 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT"
+  with_items:
+    - "{{ proxy_lan_interface }}"
+    - "{{ proxy_wlan_interface }}"
+  notify:
+    - Restart firewall
 
 - name: Allow proxy cache ports for IPv6
   iptables_raw:
-    name: proxy_ports_ipv6
+    name: "proxy_ports_{{ item }}_ipv6"
     weight: 40
     ipversion: 6
-    rules: "-A INPUT -p tcp -m tcp --dport 3128 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT"
+    rules: "-A INPUT -i {{ item }} -p tcp -m tcp --dport 3128 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT"
+  with_items:
+    - "{{ proxy_lan_interface }}"
+    - "{{ proxy_wlan_interface }}"
   notify:
     - Restart firewall
 ...
