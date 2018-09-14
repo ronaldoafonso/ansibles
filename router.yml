@@ -2,8 +2,6 @@
 - name: Configure a router
   hosts: servers
   become: yes
-  vars:
-    router_wan_interface: "eth0"
 
   roles:
     - firewall

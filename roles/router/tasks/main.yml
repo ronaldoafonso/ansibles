@@ -17,6 +17,19 @@
   notify:
     - Restart sysctl
 
+- name: Set IPv4 forward rule
+  iptables_raw:
+    name: basic_forward_ipv4
+    table: filter
+    weight: 10
+    ipversion: 4
+    keep_unmanaged: no
+    rules: |
+      -A FORWARD  -m state --state RELATED,ESTABLISHED -j ACCEPT
+      -A FORWARD -o "{{ router_wan_interface }}" -j ACCEPT
+  notify:
+    - Restart firewall
+
 - name: Configure NAT for IPv4
   iptables_raw:
     name: basic_nat
@@ -30,6 +43,19 @@
       -P OUTPUT ACCEPT
       -P POSTROUTING ACCEPT
       -A POSTROUTING -o {{ router_wan_interface }} -j MASQUERADE
+  notify:
+    - Restart firewall
+
+- name: Set IPv6 forward rule
+  iptables_raw:
+    name: basic_forward_ipv6
+    table: filter
+    weight: 10
+    ipversion: 6
+    keep_unmanaged: no
+    rules: |
+      -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+      -A FORWARD -o "{{ router_wan_interface }}" -j ACCEPT
   notify:
     - Restart firewall
 ...
