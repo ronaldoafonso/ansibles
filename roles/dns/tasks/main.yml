@@ -1,0 +1,76 @@
+---
+- name: Install dns packages
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  with_items:
+    - bind9
+    - dnsutils
+
+- name: Set chroot dir for dns server
+  replace:
+    path: /etc/default/bind9
+    regexp: '^OPTIONS="-u bind"$'
+    replace: 'OPTIONS="-u {{ bind_user }} -t {{ bind_chroot_dir }}"'
+
+- name: Create chrooted dirs for dns server
+  file:
+    path: "{{ item }}"
+    owner: "{{ bind_user }}"
+    group: "{{ bind_group }}"
+    state: directory
+  with_items:
+    - "{{ bind_chroot_dir }}/etc"
+    - "{{ bind_chroot_dir }}/dev"
+    - "{{ bind_chroot_dir }}/lib"
+    - "{{ bind_chroot_dir }}/usr/sbin"
+    - "{{ bind_chroot_dir }}/var/cache/bind"
+    - "{{ bind_chroot_dir }}/var/run"
+
+- name: mknod devices in chrooted dir
+  command: mknod -m 0660 "{{ item.dev }}" c "{{ item.major }}" "{{ item.minor }}"
+  args:
+    creates: "{{ item.dev }}"
+  with_items:
+    - { dev: "{{ bind_chroot_dir }}/dev/null", major: '1', minor: '3'}
+    - { dev: "{{ bind_chroot_dir }}/dev/random", major: '1', minor: '8'}
+
+- name: Move original bind config dir to the chrooted one
+  command: "mv /etc/bind {{ bind_chroot_dir }}/etc"
+  args:
+    creates: "{{ bind_chroot_dir }}/etc/bind"
+
+- name: Create a symlink to original bind dir
+  file:
+    src: "{{ bind_chroot_dir }}/etc/bind"
+    path: /etc/bind
+    owner: 0
+    group: "{{ bind_group }}"
+    state: link
+
+- name: Copy localtime
+  command: "cp /etc/localtime {{ bind_chroot_dir}}/etc/"
+  args:
+    creates: "{{ bind_chroot_dir }}/etc/localtime"
+
+- name: Copy dns forward only config file
+  template:
+    src: named.conf.options.j2
+    dest: /etc/bind/named.conf.options
+    owner: root
+    group: bind
+    mode: 0640
+  notify:
+    - Restart dns server
+
+- name: Allow DNS ports for IPv4
+  iptables_raw:
+    name: "dns_ports_int_{{ item.interface }}_ipv4"
+    weight: "{{ item.weight }}"
+    ipversion: 4
+    keep_unmanaged: no
+    rules: "-A INPUT -i {{ item.interface }} -p udp -m udp --dport 53 -m state --state NEW -j ACCEPT"
+  with_items:
+    - { "interface": "{{ bind_listen_ipv4_lan_wire_interface }}", "weight": 15 }
+    - { "interface": "{{ bind_listen_ipv4_lan_wireless_interface }}", "weight": 16 }
+...

@@ -1,0 +1,8 @@
+---
+- name: Install a DNS server
+  hosts: servers
+  become: yes
+
+  roles:
+    - dns
+...
