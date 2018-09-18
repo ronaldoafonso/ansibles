@@ -1,0 +1,11 @@
+---
+- name: Copy rsyslog client config file
+  template:
+    src: rsyslog.conf.j2
+    dest: /etc/rsyslog.conf
+    owner: 0
+    group: 0
+    mode: 0644
+  notify:
+    - Restart rsyslogd
+...

@@ -1,0 +1,11 @@
+---
+- name: Configure the secondary server
+  hosts: servers
+  become: yes
+
+  roles:
+    - firewall
+    - syslog
+    - letsencrypt
+    - cdn
+...
