@@ -1,17 +1,28 @@
 options {
 
-	version none;
+    version none;
+    
+    directory "/var/cache/bind";
+    
+    forwarders {
+        {{ bind_forward_server_ip6addr_1 }};
+        {{ bind_forward_server_ip6addr_2 }};
+        {{ bind_forward_server_ip4addr_1 }};
+        {{ bind_forward_server_ip4addr_2 }};
+    };
+    
+    dnssec-validation auto;
+    
+    auth-nxdomain no;    # conform to RFC1035
 
-	directory "/var/cache/bind";
+    listen-on {
+        127.0.0.1;
+        {{ bind_listen_on_ip4addr_1 }};
+        {{ bind_listen_on_ip4addr_2 }};
+    };
 
-	forwarders {
-        {{ bind_forward_server_1 }};
-        {{ bind_forward_server_2 }};
-	};
-
-	dnssec-validation auto;
-
-	auth-nxdomain no;    # conform to RFC1035
-	listen-on-v6 { any; };
+    listen-on-v6 {
+        ::1;
+    };
 };
 
