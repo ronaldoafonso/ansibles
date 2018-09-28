@@ -1,6 +1,8 @@
 options {
 
     version none;
+
+    rate-limit { responses-per-second 10; };
     
     directory "/var/cache/bind";
     
