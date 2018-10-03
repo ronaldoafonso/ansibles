@@ -1,0 +1,15 @@
+---
+- name: Install "dhcp client" package
+  apt:
+    name: isc-dhcp-client
+    update_cache: yes
+
+- name: Allow DHCP client port for IPv6
+  iptables_raw:
+    name: "dhcpc_port_ipv6"
+    weight: 75
+    ipversion: 6
+    keep_unmanaged: no
+    table: "filter"
+    rules: "-A INPUT -p udp -m udp --dport 546 -m state --state NEW -j ACCEPT"
+...

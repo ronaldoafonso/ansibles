@@ -1,0 +1,8 @@
+---
+- name: Configure DHCP client
+  hosts: servers
+  become: yes
+
+  roles:
+    - dhcpc
+...
