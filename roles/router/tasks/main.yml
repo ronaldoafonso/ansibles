@@ -55,7 +55,10 @@
     keep_unmanaged: no
     rules: |
       -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
-      -A FORWARD -o "{{ router_wan_interface }}" -j ACCEPT
+      -A FORWARD -o "{{ router_6in4_interface }}" -m state --state NEW -j ACCEPT
+      -A FORWARD -o "{{ router_wan_interface }}" -m state --state NEW -j ACCEPT
+      -A FORWARD -o "{{ router_lan_interface }}" -m state --state NEW -j ACCEPT
+      -A FORWARD -o "{{ router_wlan_interface }}" -m state --state NEW -j ACCEPT
   notify:
     - Restart firewall
 ...
