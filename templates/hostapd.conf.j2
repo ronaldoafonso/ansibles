@@ -12,6 +12,12 @@ ctrl_interface_group=0
 
 ssid={{ access_point_ssid }}
 
+wpa_passphrase={{ access_point_passphrase }}
+auth_algs=1
+wpa=2
+wpa_pairwise=CCMP
+wpa_key_mgmt=WPA-PSK
+
 country_code=BR
 hw_mode=g
 channel=1

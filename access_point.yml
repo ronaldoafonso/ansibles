@@ -5,6 +5,7 @@
   vars:
     access_point_interface: "wlan0"
     access_point_ssid: "ssid"
+    access_point_passphrase: "passphrase"
 
   tasks:
     - name: Install wifi access point software
