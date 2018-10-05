@@ -1,0 +1,8 @@
+---
+- name: Configure a "Router Advertisement Daemon"
+  hosts: servers
+  become: yes
+
+  roles:
+    - radvd
+...

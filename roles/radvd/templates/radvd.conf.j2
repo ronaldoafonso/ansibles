@@ -1,0 +1,30 @@
+
+interface {{ radvd_lan_interface }} {
+    AdvSendAdvert on;
+    MinRtrAdvInterval 3;
+    MaxRtrAdvInterval 10;
+    prefix {{ radvd_lan_prefix }} {
+        AdvOnLink on;
+        AdvAutonomous on;
+        AdvRouterAddr on;
+    };
+    route ::/0 {
+    };
+    RDNSS {{ radvd_rddns_servers }} {
+    };
+};
+
+interface {{ radvd_wlan_interface }} {
+    AdvSendAdvert on;
+    MinRtrAdvInterval 3;
+    MaxRtrAdvInterval 10;
+    prefix {{ radvd_wlan_prefix }} {
+        AdvOnLink on;
+        AdvAutonomous on;
+        AdvRouterAddr on;
+    };
+    route ::/0 {
+    };
+    RDNSS {{ radvd_rddns_servers }} {
+    };
+};
