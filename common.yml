@@ -44,7 +44,7 @@
         dest: /etc/ssh/sshd_config
         owner: 0
         group: 0
-        mode: 0644
+        mode: 0600
         validate: '/usr/sbin/sshd -T -f %s'
       notify:
         - Restart sshd
