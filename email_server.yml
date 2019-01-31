@@ -2,56 +2,7 @@
 - name: Configure email server
   hosts: servers
   become: yes
-  vars:
-    myhostname: "myhostname"
-    mydomain: "mydomain"
 
-  tasks:
-    - name: Install mail packages
-      apt:
-        name: "{{ item }}"
-        update_cache: yes
-      with_items:
-        - postfix
-        - mailutils
-        - procmail
-        - mutt
-
-    - name: Copy postfix server config file
-      template:
-        src: templates/main.cf.j2
-        dest: /etc/postfix/main.cf
-        owner: 0
-        group: 0
-        mode: 0644
-      notify:
-        - Restart postfix
-
-    - name: Allow email TCP port for IPv4
-      iptables_raw:
-        name: "postfix_ipv4"
-        table: "filter"
-        ipversion: 4
-        weight: 20
-        keep_unmanaged: no
-        rules: |
-          -A INPUT -p tcp -m tcp --dport 25 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
-          -A INPUT -i tun0 -p tcp -m tcp --dport 143 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
-
-    - name: Allow email TCP port for IPv6
-      iptables_raw:
-        name: "postfix_ipv6"
-        table: "filter"
-        weight: 20
-        ipversion: 6
-        keep_unmanaged: no
-        rules: |
-          -A INPUT -p tcp -m tcp --dport 25 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
-          -A INPUT -i tun0 -p tcp -m tcp --dport 143 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
-
-  handlers:
-    - name: Restart postfix
-      service:
-        name: postfix
-        state: restarted
+  roles:
+    - email
 ...
