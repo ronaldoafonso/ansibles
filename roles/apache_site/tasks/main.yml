@@ -1,0 +1,31 @@
+- name: Install Apache packages
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  loop:
+    - apache2
+
+- name: Create Apache Site base dir
+  file:
+    path: "{{ document_root }}"
+    owner: 0
+    group: 0
+    mode: 0755
+    state: directory
+
+- name: Copy base Apache Site config file
+  template:
+    src: 020-site-http.conf.j2
+    dest: /etc/apache2/sites-available/020-site-http.conf
+    owner: 0
+    group: 0
+    mode: 0644
+  notify:
+    - Restart web server
+
+- name: Activate Apache Site
+  command: a2ensite 020-site-http.conf
+  args:
+    creates: /etc/apache2/sites-enabled/020-site-http.conf
+  notify:
+    - Restart web server

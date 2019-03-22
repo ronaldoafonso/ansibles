@@ -1,0 +1,8 @@
+---
+- name: A simple Apache HTTP web site
+  hosts: web
+  become: yes
+
+  roles:
+    - role: apache_site
+...
