@@ -2,7 +2,7 @@
   apt:
     name: "{{ item }}"
     update_cache: yes
-  with_items:
+  loop:
     - apache2
 
 - name: Activate SSL module
@@ -25,7 +25,7 @@
     owner: 0
     group: 0
     mode: 0644
-  with_items:
+  loop:
     - 010-cdn-http.conf
     - 010-cdn-https.conf
   notify:
@@ -35,7 +35,7 @@
   command: a2ensite {{ item }}
   args:
     creates: /etc/apache2/sites-enabled/{{ item }}
-  with_items:
+  loop:
     - 010-cdn-http.conf
     - 010-cdn-https.conf
   notify:
@@ -52,7 +52,7 @@
   command: a2enmod {{ item }}
   args:
     creates: /etc/apache2/mods-enabled/{{ item }}.load
-  with_items:
+  loop:
     - headers
   notify:
     - Restart web server
