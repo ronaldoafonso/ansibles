@@ -13,6 +13,14 @@
     mode: 0755
     state: directory
 
+- name: Create Apache Site base log dir
+  file:
+    path: "{{ log_dir }}"
+    owner: 0
+    group: adm
+    mode: 0750
+    state: directory
+
 - name: Copy base Apache Site config file
   template:
     src: 020-site-http.conf.j2
