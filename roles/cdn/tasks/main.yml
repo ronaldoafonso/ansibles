@@ -12,10 +12,18 @@
 
 - name: Create CDN base dir
   file:
-    path: /var/www/cdn
+    path: "{{ document_root }}"
     owner: 0
     group: 0
     mode: 0755
+    state: directory
+
+- name: Create CDN base log dir
+  file:
+    path: "{{ log_dir }}"
+    owner: 0
+    group: adm
+    mode: 0750
     state: directory
 
 - name: Copy base CDN config files

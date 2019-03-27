@@ -15,6 +15,6 @@
     SSLCompression off
     SSLSessionTickets off
     
-    ErrorLog ${APACHE_LOG_DIR}/error.log
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/{{ server_name }}/error.log
+    CustomLog ${APACHE_LOG_DIR}/{{ server_name }}/access.log combined
 </VirtualHost>
