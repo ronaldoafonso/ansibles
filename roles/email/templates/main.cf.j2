@@ -46,7 +46,8 @@ smtpd_sender_restrictions = reject_non_fqdn_sender
 smtpd_relay_restrictions = permit_mynetworks
                            permit_sasl_authenticated
                            reject_unauth_destination
-smtpd_recipient_restrictions = permit_sasl_authenticated
+smtpd_recipient_restrictions = reject_non_fqdn_recipient
+                               permit_sasl_authenticated
                                permit_mynetworks
                                reject_unauth_destination
                                check_policy_service unix:private/policyd-spf
