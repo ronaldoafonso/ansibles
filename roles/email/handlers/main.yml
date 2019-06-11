@@ -3,4 +3,7 @@
   service:
     name: postfix
     state: restarted
+
+- name: New aliases
+  command: newaliases
 ...

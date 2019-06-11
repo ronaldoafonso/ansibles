@@ -39,4 +39,14 @@
     mode: 0644
   notify:
     - Restart postfix
+
+- name: Copy main aliases file
+  template:
+    src: aliases.j2
+    dest: /etc/aliases
+    owner: 0
+    group: 0
+    mode: 0644
+  notify:
+    - New aliases
 ...
