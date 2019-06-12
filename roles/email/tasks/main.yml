@@ -49,4 +49,16 @@
     mode: 0644
   notify:
     - New aliases
+    - Restart postfix
+
+- name: Copy HELO access checks file
+  template:
+    src: helo_access_checks.j2
+    dest: /etc/postfix/helo_access_checks
+    owner: 0
+    group: 0
+    mode: 0644
+  notify:
+    - Helo access checks
+    - Restart postfix
 ...

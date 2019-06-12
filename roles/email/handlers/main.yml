@@ -1,9 +1,12 @@
 ---
+- name: New aliases
+  command: newaliases
+
+- name: Helo access checks
+  command: postalias hash:/etc/postfix/helo_access_checks
+
 - name: Restart postfix
   service:
     name: postfix
     state: restarted
-
-- name: New aliases
-  command: newaliases
 ...
