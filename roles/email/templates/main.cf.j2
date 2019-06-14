@@ -44,6 +44,7 @@ smtpd_helo_restrictions = reject_non_fqdn_helo_hostname
 smtpd_sender_restrictions = check_helo_access hash:/etc/postfix/helo_access_checks
                             reject_non_fqdn_sender
                             reject_unknown_sender_domain
+                            reject_unverified_sender
 smtpd_relay_restrictions = permit_mynetworks
                            permit_sasl_authenticated
                            reject_unauth_destination
