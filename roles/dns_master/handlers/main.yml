@@ -1,0 +1,6 @@
+---
+- name: Restart dns master server
+  service:
+    name: bind9
+    state: restarted
+...

@@ -1,0 +1,103 @@
+---
+- name: Install dns packages
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  with_items:
+    - bind9
+    - dnsutils
+
+- name: Set chroot dir for dns server
+  lineinfile:
+    dest: /etc/default/bind9
+    regexp: '^OPTIONS="-u bind'
+    line: 'OPTIONS="-u {{ bind_user }} -t {{ bind_chroot_dir }}"'
+    state: present
+
+- name: Create chroot dir for dns server
+  file:
+    path: "{{ bind_chroot_dir }}/{{ item }}"
+    owner: "{{ bind_user }}"
+    group: "{{ bind_group }}"
+    state: directory
+  with_items:
+    - etc
+    - dev
+    - lib
+    - usr/sbin
+    - var/cache/bind
+    - var/run
+
+- name: mknod devices in chroot dir
+  command: "mknod -m 0660 {{ item.dev }} c {{ item.major }} {{ item.minor }}"
+  args:
+    creates: "{{ item.dev }}"
+  with_items:
+  - { dev: "{{ bind_chroot_dir }}/dev/null", major: '1', minor: '3'}
+  - { dev: "{{ bind_chroot_dir }}/dev/random", major: '1', minor: '8'}
+
+- name: Move original bind config dir to the chrooted one
+  command: "mv /etc/bind {{ bind_chroot_dir }}/etc"
+  args:
+    creates: "{{ bind_chroot_dir }}/etc/bind"
+
+- name: Create a symlink to original bind dir
+  file:
+    src: "{{ bind_chroot_dir }}/etc/bind"
+    dest: /etc/bind
+    owner: 0
+    group: "{{ bind_group }}"
+    state: link
+
+- name: Copy localtime
+  command: "cp /etc/localtime {{ bind_chroot_dir}}/etc/"
+
+- name: Copy dns master config files
+  template:
+    src: "{{ item.src_file }}"
+    dest: "{{ item.dst_file }}"
+    owner: root
+    group: bind
+    mode: 0644
+  with_items:
+    - { src_file: "named.conf.local.j2", dst_file: "/etc/bind/named.conf.local" }
+    - { src_file: "named.conf.options.j2", dst_file: "/etc/bind/named.conf.options" }
+  notify:
+    - Restart dns master server
+
+- name: Allow DNS UDP port for IPv4
+  iptables_raw:
+    name: "dns_udp_port_ipv4"
+    table: "filter"
+    weight: 15
+    ipversion: 4
+    keep_unmanaged: no
+    rules: "-A INPUT -p udp -m udp --dport 53 -m state --state NEW -j ACCEPT"
+
+- name: Allow DNS TCP port for IPv4
+  iptables_raw:
+    name: "dns_tcp_port_ipv4"
+    table: "filter"
+    weight: 16
+    ipversion: 4
+    keep_unmanaged: no
+    rules: "-A INPUT -p tcp -m tcp --dport 53 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT"
+
+- name: Allow DNS UDP port for IPv6
+  iptables_raw:
+    name: "dns_udp_port_ipv6"
+    table: "filter"
+    weight: 15
+    ipversion: 6
+    keep_unmanaged: no
+    rules: "-A INPUT -p udp -m udp --dport 53 -m state --state NEW -j ACCEPT"
+
+- name: Allow DNS TCP port for IPv6
+  iptables_raw:
+    name: "dns_tcp_port_ipv6"
+    table: "filter"
+    weight: 16
+    ipversion: 6
+    keep_unmanaged: no
+    rules: "-A INPUT -p tcp -m tcp --dport 53 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT"
+...

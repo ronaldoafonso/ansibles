@@ -2,33 +2,7 @@
 - name: Configure dns master server
   hosts: servers
   become: yes
-  vars:
-    domain: "domain"
-    bind_user: "bind"
-    bind_group: "bind"
-    bind_chroot_dir: "/var/bind/chroot"
-    slave_ip4addr: "2.2.2.2"
 
-  tasks:
-    - include: dns_common.yml
-
-    - name: Copy dns master config and zone files
-      template:
-        src: "templates/{{ item.src_file }}"
-        dest: "{{ item.dst_file }}"
-        owner: root
-        group: bind
-        mode: 0644
-      with_items:
-        - { src_file: "named.conf.local.j2", dst_file: "/etc/bind/named.conf.local" }
-        - { src_file: "named.conf.options.j2", dst_file: "/etc/bind/named.conf.options" }
-        - { src_file: "db.domain.j2", dst_file: "/var/cache/bind/db.{{ domain }}" }
-      notify:
-        - Restart dns master server
-
-  handlers:
-    - name: Restart dns master server
-      service:
-        name: bind9
-        state: restarted
+  roles:
+    - dns_master
 ...

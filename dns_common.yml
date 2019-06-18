@@ -30,12 +30,16 @@
 
 - name: mknod devices in chroot dir
   command: "mknod -m 0660 {{ item.dev }} c {{ item.major }} {{ item.minor }}"
+  args:
+    creates: "{{ item.dev }}"
   with_items:
   - { dev: "{{ bind_chroot_dir }}/dev/null", major: '1', minor: '3'}
   - { dev: "{{ bind_chroot_dir }}/dev/random", major: '1', minor: '8'}
 
 - name: Move original bind config dir to the chrooted one
   command: "mv /etc/bind {{ bind_chroot_dir }}/etc"
+  args:
+    creates: "{{ bind_chroot_dir }}/etc/bind"
 
 - name: Create a symlink to original bind dir
   file:
