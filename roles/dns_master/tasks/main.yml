@@ -52,7 +52,7 @@
 - name: Copy localtime
   command: "cp /etc/localtime {{ bind_chroot_dir}}/etc/"
 
-- name: Copy dns master config files
+- name: Copy dns master config and zone files
   template:
     src: "{{ item.src_file }}"
     dest: "{{ item.dst_file }}"
@@ -62,6 +62,8 @@
   with_items:
     - { src_file: "named.conf.local.j2", dst_file: "/etc/bind/named.conf.local" }
     - { src_file: "named.conf.options.j2", dst_file: "/etc/bind/named.conf.options" }
+    - { src_file: "db.ronaldoafonso.com.br.j2", dst_file: "/var/bind/chroot/var/cache/bind/db.ronaldoafonso.com.br" }
+    - { src_file: "db.vpn.ronaldoafonso.com.br.j2", dst_file: "/var/bind/chroot/var/cache/bind/db.vpn.ronaldoafonso.com.br" }
   notify:
     - Restart dns master server
 

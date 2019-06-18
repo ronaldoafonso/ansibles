@@ -1,0 +1,51 @@
+;
+; BIND data file for {{ dns_main_domain.name }} domain
+;
+
+$TTL	86400
+
+@	IN	SOA	{{ dns_main_domain.ns1 }}.{{ dns_main_domain.name }}. root.{{ dns_main_domain.name }}. (
+						1906181526     	; Serial
+						86400		; Refresh
+						86400		; Retry
+						2419200		; Expire
+						86400)		; Negative Cache TTL
+
+	IN	NS	{{ dns_main_domain.ns1 }}.{{ dns_main_domain.name }}.
+	IN	NS	{{ dns_main_domain.ns2 }}.{{ dns_main_domain.name }}.
+	IN	MX	10 {{ dns_main_domain.host2 }}.{{ dns_main_domain.name }}.
+	IN	TXT	"v=spf1 +mx -all"
+
+{{ dns_main_domain.ns1 }}	IN	A	{{ dns_main_domain.ns1_ipv4addr }}
+	IN	AAAA	{{ dns_main_domain.ns1_ipv6addr }}
+
+{{ dns_main_domain.ns2 }}	IN	A	{{ dns_main_domain.ns2_ipv4addr }}
+	IN	AAAA	{{ dns_main_domain.ns2_ipv6addr }}
+
+{{ dns_main_domain.host1 }}	IN	A	{{ dns_main_domain.host1_ipv4addr }}
+	IN	AAAA	{{ dns_main_domain.host1_ipv6addr }}
+
+{{ dns_main_domain.host2 }}	IN	A	{{ dns_main_domain.host2_ipv4addr }}
+	IN	AAAA	{{ dns_main_domain.host2_ipv6addr }}
+
+{{ dns_main_domain.host1_alias1 }}	IN	CNAME	{{ dns_main_domain.host1 }}.{{ dns_main_domain.name }}.
+
+{{ dns_main_domain.host2_alias1 }}	IN	CNAME	{{ dns_main_domain.host2 }}.{{ dns_main_domain.name }}.
+
+{{ dns_main_domain.host2_alias2 }}	IN	CNAME	{{ dns_main_domain.host2 }}.{{ dns_main_domain.name }}.
+
+{{ dns_main_domain.host2_alias3 }}	IN	CNAME	{{ dns_main_domain.host2 }}.{{ dns_main_domain.name }}.
+
+;
+; Ronaldo Afonso VPN domain ({{ dns_vpn_domain.name }})
+;
+
+vpn	IN	NS	{{ dns_vpn_domain.ns1 }}.vpn.{{ dns_main_domain.name }}.
+	IN	NS	{{ dns_vpn_domain.ns2 }}.vpn.{{ dns_main_domain.name }}.
+
+$ORIGIN	{{ dns_vpn_domain.name }}.
+{{ dns_vpn_domain.ns1 }}	IN	A	{{ dns_vpn_domain.ns1_ipv4addr }}
+	IN	AAAA	{{ dns_vpn_domain.ns1_ipv6addr }}
+
+{{ dns_vpn_domain.ns2 }}	IN	A	{{ dns_vpn_domain.ns2_ipv4addr }}
+	IN	AAAA	{{ dns_vpn_domain.ns2_ipv6addr }}
