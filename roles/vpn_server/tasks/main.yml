@@ -1,0 +1,64 @@
+---
+- name: Install "openvpn" package
+  apt:
+    name: openvpn
+    update_cache: yes
+
+- name: Set VPN server name
+  lineinfile:
+    dest: /etc/default/openvpn
+    regexp: '^#AUTOSTART="none"'
+    line: 'AUTOSTART="{{ vpn_server_name }}"'
+    state: present
+  notify:
+    - Restart openvpn
+
+- name: Copy VPN server config file
+  template:
+    src: openvpn-server.conf.j2
+    dest: /etc/openvpn/{{ vpn_server_name }}.conf
+    owner: 0
+    group: 0
+    mode: 0600
+  notify:
+    - Restart openvpn
+
+- name: Create clients directory
+  file:
+    path: "{{ vpn_clients_dir }}"
+    owner: root
+    group: root
+    mode: 0700
+    state: directory
+
+- name: Copy clients files
+  template:
+    src: "{{ item.src_file }}"
+    dest: "{{ vpn_clients_dir }}/{{ item.dst_file }}"
+    owner: root
+    group: root
+    mode: 0600
+  with_items:
+    - { src_file: host1.j2, dst_file: "{{ vpn_clients.host1 }}" }
+    - { src_file: host2.j2, dst_file: "{{ vpn_clients.host2 }}" }
+  notify:
+    - Restart openvpn
+
+- name: Allow VPN UDP port for IPv4
+  iptables_raw:
+    name: "vpn_udp_port_ipv4"
+    table: "filter"
+    weight: 75
+    ipversion: 4
+    keep_unmanaged: no
+    rules: "-A INPUT -p udp -m udp --dport 1194 -m state --state NEW -j ACCEPT"
+
+- name: Allow VPN UDP port for IPv6
+  iptables_raw:
+    name: "vpn_udp_port_ipv6"
+    table: "filter"
+    weight: 75
+    ipversion: 6
+    keep_unmanaged: no
+    rules: "-A INPUT -p udp -m udp --dport 1194 -m state --state NEW -j ACCEPT"
+...

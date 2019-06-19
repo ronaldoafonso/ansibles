@@ -2,39 +2,7 @@
 - name: Configure VPN server
   hosts: servers
   become: yes
-  vars:
-    vpn_server_name: "vpnserver"
-    vpn_ip4_net: "10.200.0.0 255.255.0.0"
-    vpn_ip6_net: "2001::0/112"
 
-  tasks:
-    - name: Install "openvpn" package
-      apt:
-        name: openvpn
-        update_cache: yes
-
-    - name: Set VPN server name
-      lineinfile:
-        dest: /etc/default/openvpn
-        regexp: '^#AUTOSTART="none"'
-        line: 'AUTOSTART="{{ vpn_server_name }}"'
-        state: present
-      notify:
-        - Restart openvpn
-
-    - name: Copy VPN server config file
-      template:
-        src: templates/openvpn-server.conf.j2
-        dest: /etc/openvpn/{{ vpn_server_name }}.conf
-        owner: 0
-        group: 0
-        mode: 0600
-      notify:
-        - Restart openvpn
-
-  handlers:
-    - name: Restart openvpn
-      service:
-        name: openvpn@{{ vpn_server_name }}
-        state: restarted
+  roles:
+    - vpn_server
 ...

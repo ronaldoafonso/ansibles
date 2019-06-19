@@ -4,8 +4,8 @@ proto udp
 port 1194
 keepalive 10 60
 dev tun
-server {{ vpn_ip4_net }}
-server-ipv6 {{ vpn_ip6_net }}
+server {{ vpn_ipv4_net }}
+server-ipv6 {{ vpn_ipv6_net }}
 topology p2p
 client-to-client
 
