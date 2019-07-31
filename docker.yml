@@ -39,4 +39,29 @@
         append: yes
       when: admin_username
 
+    - name: Allow Docker Swarm for IPv4
+      iptables_raw:
+        name: "docker_swarm_ipv4"
+        table: "filter"
+        weight: 76
+        ipversion: "4"
+        keep_unmanaged: no
+        rules: |
+          -A INPUT -i tun0 -p tcp -m tcp --dport 2377 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+          -A INPUT -i tun0 -p tcp -m tcp --dport 7946 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+          -A INPUT -i tun0 -p udp -m udp --dport 7946 -m state --state NEW -j ACCEPT
+          -A INPUT -i tun0 -p udp -m udp --dport 4789 -m state --state NEW -j ACCEPT
+
+    - name: Allow Docker Swarm for IPv6
+      iptables_raw:
+        name: "docker_swarm_ipv6"
+        table: "filter"
+        weight: 76
+        ipversion: "6"
+        keep_unmanaged: no
+        rules: |
+          -A INPUT -i tun0 -p tcp -m tcp --dport 2377 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+          -A INPUT -i tun0 -p tcp -m tcp --dport 7946 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+          -A INPUT -i tun0 -p udp -m udp --dport 7946 -m state --state NEW -j ACCEPT
+          -A INPUT -i tun0 -p udp -m udp --dport 4789 -m state --state NEW -j ACCEPT
 ...
