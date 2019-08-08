@@ -1,11 +1,8 @@
 ---
 - name: Install dns packages
   apt:
-    name: "{{ item }}"
+    name: ['bind9', 'dnsutils']
     update_cache: yes
-  with_items:
-    - bind9
-    - dnsutils
 
 - name: Set chroot dir for dns server
   lineinfile:
@@ -58,7 +55,7 @@
     dest: "{{ item.dst_file }}"
     owner: root
     group: bind
-    mode: 0644
+    mode: 0640
   with_items:
     - { src_file: "named.conf.local.j2", dst_file: "/etc/bind/named.conf.local" }
     - { src_file: "named.conf.options.j2", dst_file: "/etc/bind/named.conf.options" }
