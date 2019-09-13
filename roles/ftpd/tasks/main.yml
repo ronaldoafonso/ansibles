@@ -1,0 +1,56 @@
+---
+- name: Install ftpd packages
+  apt:
+    name: 'vsftpd'
+    update_cache: yes
+
+- name: Copy ftpd config file
+  template:
+    src: vsftpd.conf.j2
+    dest: /etc/vsftpd.conf
+    owner: root
+    group: root
+    mode: 0640
+  notify:
+    - Restart ftpd server
+
+- name: Allow FTP command port for IPv4
+  iptables_raw:
+    name: "ftp_command_tcp_port_ipv4"
+    table: "filter"
+    weight: 5
+    ipversion: 4
+    keep_unmanaged: no
+    rules: "-A INPUT -p tcp -m tcp --dport 21 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT"
+
+- name: Allow FTP data port for IPv4
+  iptables_raw:
+    name: "ftp_data_tcp_port_ipv4"
+    table: "filter"
+    weight: 75
+    ipversion: 4
+    keep_unmanaged: no
+    rules: |
+        -A INPUT -p tcp -m tcp --dport 2121 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+        -A INPUT -p tcp -m tcp --dport 2120 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+
+- name: Allow FTP command port for IPv6
+  iptables_raw:
+    name: "ftp_command_tcp_port_ipv6"
+    table: "filter"
+    weight: 5
+    ipversion: 6
+    keep_unmanaged: no
+    rules: "-A INPUT -p tcp -m tcp --dport 21 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT"
+
+- name: Allow FTP data port for IPv6
+  iptables_raw:
+    name: "ftp_data_tcp_port_ipv6"
+    table: "filter"
+    weight: 75
+    ipversion: 6
+    keep_unmanaged: no
+    rules: |
+        -A INPUT -p tcp -m tcp --dport 2121 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+        -A INPUT -p tcp -m tcp --dport 2120 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+...

@@ -1,0 +1,8 @@
+---
+- name: Configure an ftp server
+  hosts: servers
+  become: yes
+
+  roles:
+    - ftpd
+...
