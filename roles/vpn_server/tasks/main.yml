@@ -42,6 +42,7 @@
     - { src_file: host1.j2, dst_file: "{{ vpn_clients.host1 }}" }
     - { src_file: host2.j2, dst_file: "{{ vpn_clients.host2 }}" }
     - { src_file: host3.j2, dst_file: "{{ vpn_clients.host3 }}" }
+    - { src_file: host4.j2, dst_file: "{{ vpn_clients.host4 }}" }
   notify:
     - Restart openvpn
 
