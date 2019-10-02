@@ -5,7 +5,7 @@
 $TTL	86400
 
 @	IN	SOA	{{ dns_vpn_domain.ns1 }}.{{ dns_vpn_domain.name }}. root.{{ dns_vpn_domain.name }}. (
-						1908131556 	; Serial
+						1909021157 	; Serial
 						86400		; Refresh
 						86400		; Retry
 						2419200		; Expire
@@ -33,6 +33,9 @@ $TTL	86400
 
 {{ dns_vpn_domain.host4 }}	IN	A	{{ dns_vpn_domain.host4_ipv4addr }}
 	IN	AAAA	{{ dns_vpn_domain.host4_ipv6addr }}
+
+{{ dns_vpn_domain.host5 }}	IN	A	{{ dns_vpn_domain.host5_ipv4addr }}
+	IN	AAAA	{{ dns_vpn_domain.host5_ipv6addr }}
 
 {{ dns_vpn_domain.host1_alias1 }}	IN	CNAME	{{ dns_vpn_domain.host1 }}.{{ dns_vpn_domain.name }}.
 
