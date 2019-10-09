@@ -6,13 +6,14 @@
       - mailutils
       - procmail
       - mutt
+      - dovecot-imapd
     update_cache: yes
 
 - name: Allow email TCP port for IPv4
   iptables_raw:
-    name: "postfix_ipv4"
+    name: "mail_ipv4"
     table: "filter"
-    ipversion: 4
+    ipversion: "4"
     weight: 20
     keep_unmanaged: no
     rules: |
@@ -21,10 +22,10 @@
 
 - name: Allow email TCP port for IPv6
   iptables_raw:
-    name: "postfix_ipv6"
+    name: "mail_ipv6"
     table: "filter"
     weight: 20
-    ipversion: 6
+    ipversion: "6"
     keep_unmanaged: no
     rules: |
       -A INPUT -p tcp -m tcp --dport 25 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
@@ -34,9 +35,9 @@
   template:
     src: main.cf.j2
     dest: /etc/postfix/main.cf
-    owner: 0
-    group: 0
-    mode: 0644
+    owner: "root"
+    group: "root"
+    mode: "0644"
   notify:
     - Restart postfix
 
@@ -44,9 +45,9 @@
   template:
     src: aliases.j2
     dest: /etc/aliases
-    owner: 0
-    group: 0
-    mode: 0644
+    owner: "root"
+    group: "root"
+    mode: "0644"
   notify:
     - New aliases
     - Restart postfix
@@ -55,10 +56,20 @@
   template:
     src: helo_access_checks.j2
     dest: /etc/postfix/helo_access_checks
-    owner: 0
-    group: 0
-    mode: 0644
+    owner: "root"
+    group: "root"
+    mode: "0644"
   notify:
     - Helo access checks
     - Restart postfix
+
+- name: Copy Dovecot 10-mail.conf 
+  template:
+    src: 10-mail.conf.j2
+    dest: /etc/dovecot/conf.d/10-mail.conf
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify:
+    - Restart dovecot
 ...
