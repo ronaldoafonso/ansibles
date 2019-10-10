@@ -1,9 +1,9 @@
 ---
 - name: Configure a CDN web server
-  hosts: web
+  hosts: servers
   become: yes
 
   roles:
-    - role: letsencrypt
+    #- role: letsencrypt
     - role: cdn
 ...
