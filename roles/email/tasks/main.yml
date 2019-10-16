@@ -19,6 +19,7 @@
     rules: |
       -A INPUT -p tcp -m tcp --dport 25 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
       -A INPUT -i tun0 -p tcp -m tcp --dport 143 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+      -A INPUT -i tun0 -p tcp -m tcp --dport 993 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
 
 - name: Allow email TCP port for IPv6
   iptables_raw:
@@ -30,6 +31,7 @@
     rules: |
       -A INPUT -p tcp -m tcp --dport 25 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
       -A INPUT -i tun0 -p tcp -m tcp --dport 143 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+      -A INPUT -i tun0 -p tcp -m tcp --dport 993 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
 
 - name: Copy postfix server config file
   template:
