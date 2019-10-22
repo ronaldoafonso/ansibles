@@ -3,14 +3,26 @@
   hosts: init
   remote_user: root
 
-  vars:
-    hostname: "hostname"
-
   vars_prompt:
+    - name: "hostname"
+      prompt: "Hostname"
+      private: false
+
+    - name: "key_file_dir"
+      prompt: "Key file dir"
+      private: false
+
     - name: "root_password"
       prompt: "Host root password to be set up"
+
     - name: "admin_password"
       prompt: "Host admin password to be set up"
+
+    - name: "key_passphrase"
+      prompt: "Key passphrase for the admin key"
+
+  vars:
+    - key_file: "{{ key_file_dir }}/{{ hostname }}"
 
   roles:
     - init

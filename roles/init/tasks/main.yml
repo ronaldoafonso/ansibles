@@ -48,6 +48,15 @@
     shell: /bin/bash
     append: yes
 
+- name: Generate SSH Key pair
+  local_action: command ssh-keygen -t rsa -b 4096 -C "{{ hostname }}" -f "{{ key_file }}" -N '{{ key_passphrase }}'
+
+- name: Set authorized key file
+  authorized_key:
+    user: "{{ admin_user }}"
+    state: present
+    key: "{{ lookup('file', key_file + '.pub') }}"
+
 - name: Update sshd configuration file
   template:
     src: sshd_config.j2
