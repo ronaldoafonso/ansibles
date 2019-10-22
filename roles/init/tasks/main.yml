@@ -1,0 +1,61 @@
+---
+- name: Set 'root' password
+  user:
+    name: root
+    password: "{{ root_password|password_hash('sha512') }}"
+
+- name: Set timezone
+  timezone:
+    name: America/Sao_Paulo
+
+- name: Set hostname
+  hostname:
+    name: "{{ hostname }}"
+
+- name: Set "/etc/hosts" file
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install "sudo" package
+  pacman:
+    name: sudo
+    update_cache: yes
+  when: ansible_distribution == "Archlinux"
+
+- name: Set "/etc/sudoers" file
+  template:
+    src: sudoers.j2
+    dest: /etc/sudoers
+    owner: root
+    group: root
+    mode: 0440
+
+- name: Add 'admin' group
+  group:
+    name: "{{ admin_group }}"
+    state: present
+
+- name: Add 'admin' user
+  user:
+    name: "{{ admin_user }}"
+    password: "{{ admin_password|password_hash('sha512') }}"
+    group: "{{ admin_group }}"
+    groups: wheel
+    shell: /bin/bash
+    append: yes
+
+- name: Update sshd configuration file
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0600
+    validate: '/usr/sbin/sshd -T -f %s'
+  notify:
+    - Restart sshd
+...

@@ -1,0 +1,17 @@
+---
+- name: Init a Linux server
+  hosts: init
+  remote_user: root
+
+  vars:
+    hostname: "hostname"
+
+  vars_prompt:
+    - name: "root_password"
+      prompt: "Host root password to be set up"
+    - name: "admin_password"
+      prompt: "Host admin password to be set up"
+
+  roles:
+    - init
+...
