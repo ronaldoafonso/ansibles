@@ -1,54 +1,39 @@
 ---
 - name: Install basic firewall packages
-  apt:
-    name: "{{ item }}"
+  pacman:
+    name: iptables
     update_cache: yes
-  with_items:
-    - iptables
-    - iptables-persistent
+  when: ansible_distribution == "Archlinux"
 
-- name: Set default IPv4 rules begin
-  iptables_raw:
-    name: default_ipv4_rules_begin
-    weight: 10
-    ipversion: 4
-    keep_unmanaged: no
-    rules: |
-      -P INPUT DROP
-      -P FORWARD DROP
-      -P OUTPUT ACCEPT
-      -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
-      -A INPUT -p tcp -m tcp --dport 22 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+- name: Set default IPv4 rules
+  template:
+    src: iptables.rules.j2
+    dest: /etc/iptables/iptables.rules
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Restart iptables firewall
 
-- name: Set default IPv4 rules end
-  iptables_raw:
-    name: default_ipv4_rules_end
-    weight: 80
-    ipversion: 4
-    keep_unmanaged: no
-    rules: |
-      -A INPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
-      -A INPUT -i lo  -j ACCEPT
+- name: Activate iptables service
+  service:
+    name: iptables
+    enabled: yes
+    state: started
 
-- name: Set default IPv6 rules begin
-  iptables_raw:
-    name: default_ipv6_rules_begin
-    weight: 10
-    ipversion: 6
-    keep_unmanaged: no
-    rules: |
-      -P INPUT DROP
-      -P FORWARD DROP
-      -P OUTPUT ACCEPT
-      -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
-      -A INPUT -p tcp -m tcp --dport 22 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+- name: Set default IPv6 rules
+  template:
+    src: ip6tables.rules.j2
+    dest: /etc/iptables/ip6tables.rules
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Restart ip6tables firewall
 
-- name: Set default IPv6 rules end
-  iptables_raw:
-    name: default_ipv6_rules_end
-    weight: 80
-    ipversion: 6
-    keep_unmanaged: no
-    rules: |
-      -A INPUT -p icmpv6 -j ACCEPT
-      -A INPUT -i lo  -j ACCEPT
+- name: Activate ip6tables service
+  service:
+    name: ip6tables
+    enabled: yes
+    state: started
+...
