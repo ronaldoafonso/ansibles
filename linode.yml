@@ -2,6 +2,9 @@
 - name: Manage Linode instances
   hosts: localhost
 
+  vars:
+    - state: "present"
+
   vars_prompt:
     - name: "access_token"
       prompt: "Linode access token"
@@ -22,10 +25,14 @@
         region: eu-west
         image: linode/arch
         root_pass: "{{ root_password | default('li1234') }}"
-        state: "{{ state | default('present') }}"
+        state: "{{ state }}"
       register: linode
 
-    - name: Show results
-      debug:
-        msg: "{{ linode }}"
+    - name: Wait for new host to become active
+      wait_for:
+        host: "{{ linode.instance.ipv4[0] }}"
+        port: 22
+        delay: 20
+        timeout: 300
+      when: state == "present"
 ...
