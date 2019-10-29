@@ -4,8 +4,13 @@
     name: squid
     state: restarted
 
-- name: Restart firewall
+- name: Restart iptables firewall
   service:
-    name: netfilter-persistent
+    name: iptables
+    state: restarted
+
+- name: Restart ip6tables firewall
+  service:
+    name: ip6tables
     state: restarted
 ...

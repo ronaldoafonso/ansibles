@@ -1,42 +1,57 @@
 ---
-- name: Install a web proxy
-  apt:
-    name: "{{ item }}"
+- name: Install web proxy server
+  pacman:
+    name: squid
     update_cache: yes
-  with_items:
-    - squid
+  when: ansible_distribution == "Archlinux"
+
+- name: Activate web proxy service
+  service:
+    name: squid
+    enabled: yes
+    state: started
 
 - name: Copy base config file
   template:
     src: squid.conf.j2
     dest: /etc/squid/squid.conf
-    owner: 0
-    group: 0
+    owner: root
+    group: root
     mode: 0640
   notify:
     - Restart web proxy
 
 - name: Allow proxy cache ports for IPv4
-  iptables_raw:
-    name: "proxy_ports_{{ item }}_ipv4"
-    weight: 40
-    ipversion: 4
-    rules: "-A INPUT -i {{ item }} -p tcp -m tcp --dport 3128 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT"
-  with_items:
-    - "{{ proxy_lan_interface }}"
-    - "{{ proxy_wlan_interface }}"
-  notify:
-    - Restart firewall
+  iptables:
+    table: filter
+    chain: INPUT
+    ip_version: ipv4
+    protocol: tcp
+    destination_port: '3128'
+    ctstate: NEW
+    in_interface: "{{ proxy_lan_interface | default('eno1') }}"
+    jump: ACCEPT
+  register: iptables
+
+- name: Save proxy rules for IPv4
+  command: iptables-save -t filter -f /etc/iptables/iptables.rules
+  when: iptables.changed == true
+  notify: Restart iptables firewall
 
 - name: Allow proxy cache ports for IPv6
-  iptables_raw:
-    name: "proxy_ports_{{ item }}_ipv6"
-    weight: 40
-    ipversion: 6
-    rules: "-A INPUT -i {{ item }} -p tcp -m tcp --dport 3128 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT"
-  with_items:
-    - "{{ proxy_lan_interface }}"
-    - "{{ proxy_wlan_interface }}"
-  notify:
-    - Restart firewall
+  iptables:
+    table: filter
+    chain: INPUT
+    ip_version: ipv6
+    protocol: tcp
+    destination_port: '3128'
+    ctstate: NEW
+    in_interface: "{{ proxy_lan_interface | default('eno1') }}"
+    jump: ACCEPT
+  register: ip6tables
+
+- name: Save proxy rules for IPv6
+  command: ip6tables-save -t filter -f /etc/iptables/ip6tables.rules
+  when: ip6tables.changed == true
+  notify: Restart ip6tables firewall
 ...
