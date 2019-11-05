@@ -35,7 +35,7 @@
 
 - name: Save proxy rules for IPv4
   command: iptables-save -t filter -f /etc/iptables/iptables.rules
-  when: iptables.changed == true
+  when: iptables is changed
   notify: Restart iptables firewall
 
 - name: Allow proxy cache ports for IPv6
@@ -52,6 +52,6 @@
 
 - name: Save proxy rules for IPv6
   command: ip6tables-save -t filter -f /etc/iptables/ip6tables.rules
-  when: ip6tables.changed == true
+  when: ip6tables is changed
   notify: Restart ip6tables firewall
 ...
