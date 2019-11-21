@@ -1,0 +1,49 @@
+
+options {
+	directory "{{ bind_chroot_cache_dir }}";
+	hostname none;
+	pid-file "{{ bind_chroot_run_dir }}/named.pid";
+	server-id none;
+	version none;
+	allow-recursion { none; };
+	allow-transfer { none; };
+	allow-update { none; };
+};
+
+zone "localhost" IN {
+	type master;
+	file "localhost.zone";
+};
+
+zone "0.0.127.in-addr.arpa" IN {
+	type master;
+	file "127.0.0.zone";
+};
+
+zone "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa" {
+	type master;
+	file "localhost.ip6.zone";
+};
+
+zone "255.in-addr.arpa" IN {
+	type master;
+	file "empty.zone";
+};
+
+zone "0.in-addr.arpa" IN {
+	type master;
+	file "empty.zone";
+};
+
+include "{{ dns_key_file_path }}";
+
+{% for domain in dns_domains %}
+zone "{{ domain.name }}" IN {
+    type {{ domain.type }};
+    file "{{ domain.file }}";
+    masters { {{ domain.master }} key "{{ domain.key }}"; };
+    allow-transfer { none; };
+    allow-query { any; };
+};
+
+{% endfor %}

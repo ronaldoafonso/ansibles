@@ -21,10 +21,10 @@
     mode: 0644
 
 - name: Install "sudo" package
-  pacman:
+  apt:
     name: sudo
     update_cache: yes
-  when: ansible_distribution == "Archlinux"
+  when: ansible_distribution == "Debian"
 
 - name: Set "/etc/sudoers" file
   template:

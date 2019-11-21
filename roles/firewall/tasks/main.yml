@@ -1,9 +1,9 @@
 ---
 - name: Install basic firewall packages
-  pacman:
+  apt:
     name: iptables
     update_cache: yes
-  when: ansible_distribution == "Archlinux"
+  when: ansible_distribution == "Debian"
 
 - name: Set default IPv4 rules
   template:
