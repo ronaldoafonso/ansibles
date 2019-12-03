@@ -1,39 +1,23 @@
 ---
 - name: Install basic firewall packages
   apt:
-    name: iptables
+    name: nftables
     update_cache: yes
   when: ansible_distribution == "Debian"
 
-- name: Set default IPv4 rules
+- name: Set default nftables rules
   template:
-    src: iptables.rules.j2
-    dest: /etc/iptables/iptables.rules
+    src: nftables.conf.j2
+    dest: /etc/nftables.conf
     owner: root
     group: root
     mode: '0644'
   notify:
-    - Restart iptables firewall
+    - Restart nftables firewall
 
-- name: Activate iptables service
+- name: Activate nftables service
   service:
-    name: iptables
-    enabled: yes
-    state: started
-
-- name: Set default IPv6 rules
-  template:
-    src: ip6tables.rules.j2
-    dest: /etc/iptables/ip6tables.rules
-    owner: root
-    group: root
-    mode: '0644'
-  notify:
-    - Restart ip6tables firewall
-
-- name: Activate ip6tables service
-  service:
-    name: ip6tables
+    name: nftables
     enabled: yes
     state: started
 ...

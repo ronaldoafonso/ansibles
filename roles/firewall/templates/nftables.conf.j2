@@ -1,0 +1,22 @@
+#!/usr/sbin/nft -f
+
+flush ruleset
+
+table inet filter {
+    chain input {
+        type filter hook input priority 0; policy drop;
+        ct state established,related accept
+        tcp dport 22 ct state new accept
+        iif lo accept
+    }
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+    }
+    chain output {
+        type filter hook output priority 0; policy drop;
+        ct state established,related accept
+        udp sport 1024-65535 ct state new accept
+        tcp sport 1024-65535 ct state new accept
+        oif lo accept
+    }
+}
