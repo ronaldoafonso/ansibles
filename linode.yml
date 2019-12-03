@@ -12,19 +12,16 @@
     - name: "hostname"
       private: false
 
-    - name: "root_password"
-      prompt: "Image initial root password to be set up"
-
   tasks:
     - name: Act on a Linode instance (add/remove)
       linode_v4:
-        access_token: "{{ access_token | default('li1234') }}"
+        access_token: "{{ access_token }}"
         label: "{{ hostname }}"
         tags: servers
         type: g6-nanode-1
         region: eu-west
         image: linode/debian10
-        root_pass: "{{ root_password | default('li1234') }}"
+        root_pass: "{{ root_password | default('LIno!$12') }}"
         state: "{{ state }}"
       register: linode
 
