@@ -44,7 +44,7 @@
     name: "{{ admin_user }}"
     password: "{{ admin_password|password_hash('sha512') }}"
     group: "{{ admin_group }}"
-    groups: wheel
+    groups: sudo
     shell: /bin/bash
     append: yes
 
