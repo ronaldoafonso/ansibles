@@ -1,6 +1,6 @@
 ---
-- name: Restart nftables firewall
+- name: Restart iptables firewall
   service:
-    name: nftables
+    name: iptables
     state: restarted
 ...

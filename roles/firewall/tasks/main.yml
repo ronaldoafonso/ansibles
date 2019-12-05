@@ -1,23 +1,23 @@
 ---
 - name: Install basic firewall packages
-  apt:
-    name: nftables
+  pacman:
+    name: iptables
     update_cache: yes
-  when: ansible_distribution == "Debian"
+  when: ansible_distribution == "Archlinux"
 
-- name: Set default nftables rules
+- name: Set default iptables rules
   template:
-    src: nftables.conf.j2
-    dest: /etc/nftables.conf
+    src: iptables.rules.j2
+    dest: /etc/iptables/iptables.rules
     owner: root
     group: root
     mode: '0644'
   notify:
-    - Restart nftables firewall
+    - Restart iptables firewall
 
-- name: Activate nftables service
+- name: Activate iptables service
   service:
-    name: nftables
+    name: iptables
     enabled: yes
     state: started
 ...
