@@ -20,7 +20,7 @@
         tags: servers
         type: g6-nanode-1
         region: eu-west
-        image: linode/debian10
+        image: linode/arch
         root_pass: "{{ root_password | default('LIno!$12') }}"
         state: "{{ state }}"
       register: linode
