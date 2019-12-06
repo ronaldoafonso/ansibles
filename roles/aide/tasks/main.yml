@@ -1,0 +1,17 @@
+---
+- name: Install AIDE packages
+  pacman:
+    name: aide
+    update_cache: yes
+  when: ansible_distribution == "Archlinux"
+
+- name: Set default AIDE rules
+  template:
+    src: aide.conf.j2
+    dest: /etc/aide.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Initialize the AIDE database
+...

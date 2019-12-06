@@ -1,0 +1,8 @@
+---
+- name: Add the Advanced Intrustion Detection Environment
+  hosts: servers
+  become: yes
+
+  roles:
+    - aide
+...

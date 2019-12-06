@@ -1,0 +1,4 @@
+---
+- name: Initialize the AIDE database
+  command: aide -i
+...
