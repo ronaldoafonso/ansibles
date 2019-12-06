@@ -5,19 +5,26 @@
     update_cache: yes
   when: ansible_distribution == "Archlinux"
 
-- name: Set default iptables rules
+- name: Set default firewall rules
   template:
-    src: iptables.rules.j2
-    dest: /etc/iptables/iptables.rules
+    src: "{{ item }}.rules.j2"
+    dest: "/etc/iptables/{{ item }}.rules"
     owner: root
     group: root
     mode: '0644'
+  with_items:
+    - iptables
+    - ip6tables
   notify:
     - Restart iptables firewall
+    - Restart ip6tables firewall
 
-- name: Activate iptables service
+- name: Activate firewall services
   service:
-    name: iptables
+    name: "{{ item }}"
     enabled: yes
     state: started
+  with_items:
+    - iptables
+    - ip6tables
 ...
