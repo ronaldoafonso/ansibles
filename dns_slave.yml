@@ -1,7 +1,14 @@
 ---
-- name: Configure dns slave server
+- name: Configure a DNS slave server
   hosts: servers
   become: yes
+
+  vars_prompt:
+    - name: "domain_key_algorithm"
+      prompt: "Key algorithm for TSIG"
+
+    - name: "domain_key_secret"
+      prompt: "Secret key for TSIG"
 
   roles:
     - dns_slave

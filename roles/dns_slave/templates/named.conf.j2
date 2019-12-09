@@ -1,8 +1,8 @@
 
 options {
-	directory "{{ bind_chroot_cache_dir }}";
+	directory "/var/named";
 	hostname none;
-	pid-file "{{ bind_chroot_run_dir }}/named.pid";
+	pid-file "/var/named";
 	server-id none;
 	version none;
 	allow-recursion { none; };
@@ -35,7 +35,7 @@ zone "0.in-addr.arpa" IN {
 	file "empty.zone";
 };
 
-include "{{ dns_key_file_path }}";
+include "{{ dns_key_file }}";
 
 {% for domain in dns_domains %}
 zone "{{ domain.name }}" IN {
