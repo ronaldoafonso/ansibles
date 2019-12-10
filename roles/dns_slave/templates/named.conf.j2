@@ -8,6 +8,10 @@ options {
 	allow-recursion { none; };
 	allow-transfer { none; };
 	allow-update { none; };
+
+    rate-limit {
+        responses-per-second {{ responses_per_second }};
+    };
 };
 
 zone "localhost" IN {
