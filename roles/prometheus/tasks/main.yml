@@ -1,0 +1,32 @@
+---
+- name: Install Prometheus Node packages
+  apt:
+    name: 'prometheus-node-exporter'
+    update_cache: yes
+
+- name: Activate Prometheus Node Exporter
+  service:
+    name: prometheus-node-exporter
+    enabled: yes
+    state: started
+
+- name: Allow Prometheus Scraping for IPv4
+  iptables_raw:
+    name: "prometheus_ipv4"
+    table: "filter"
+    weight: 78
+    ipversion: "4"
+    keep_unmanaged: no
+    rules: |
+      -A INPUT -i tun0 -p tcp -m tcp --dport 9100 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+
+- name: Allow Prometheus Scraping for IPv6
+  iptables_raw:
+    name: "prometheus_ipv6"
+    table: "filter"
+    weight: 78
+    ipversion: "6"
+    keep_unmanaged: no
+    rules: |
+      -A INPUT -i tun0 -p tcp -m tcp --dport 9100 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+...
