@@ -48,6 +48,7 @@
         keep_unmanaged: no
         rules: |
           -A INPUT -i tun0 -p tcp -m tcp --dport 2377 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+          -A INPUT -i tun0 -p tcp -m tcp --dport 2375 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
           -A INPUT -i tun0 -p tcp -m tcp --dport 7946 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
           -A INPUT -i tun0 -p udp -m udp --dport 7946 -m state --state NEW -j ACCEPT
           -A INPUT -i tun0 -p udp -m udp --dport 4789 -m state --state NEW -j ACCEPT
@@ -61,6 +62,7 @@
         keep_unmanaged: no
         rules: |
           -A INPUT -i tun0 -p tcp -m tcp --dport 2377 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
+          -A INPUT -i tun0 -p tcp -m tcp --dport 2375 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
           -A INPUT -i tun0 -p tcp -m tcp --dport 7946 --tcp-flags FIN,SYN,RST,ACK SYN -m state --state NEW -j ACCEPT
           -A INPUT -i tun0 -p udp -m udp --dport 7946 -m state --state NEW -j ACCEPT
           -A INPUT -i tun0 -p udp -m udp --dport 4789 -m state --state NEW -j ACCEPT
